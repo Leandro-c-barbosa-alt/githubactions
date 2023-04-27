@@ -31,7 +31,7 @@ jobs:
       with:
         ref: ${{ env.SOURCE_BRANCH }}
         fetch-depth: 0
-        token: ${{ env.ACT_LOCAL_TOKEN || secrets.GITHUB_TOKEN }}
+        token: ${{ env.ACT_LOCAL_TOKEN || secrets.GH_PAT }}
 
     - name: Merge target branch
       run: |
