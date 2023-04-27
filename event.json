@@ -1,7 +1,7 @@
 {
     "inputs": {
-      "source_branch": "feature1",
-      "target_branch": "dev",
+      "source_branch": "dev",
+      "target_branch": "main",
       "environment": "my_env"
     }
   }
