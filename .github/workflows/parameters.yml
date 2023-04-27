@@ -1,6 +1,9 @@
 name: Custom Deploy Workflow
 
 on:
+  push:
+    branches:
+      - dev
   workflow_dispatch:
     inputs:
       source_branch:
@@ -17,10 +20,16 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+    - name: Set default inputs
+      run: |
+        echo "SOURCE_BRANCH=${{ github.event.inputs.source_branch || github.ref }}" >> $GITHUB_ENV
+        echo "TARGET_BRANCH=${{ github.event.inputs.target_branch || 'main' }}" >> $GITHUB_ENV
+        echo "ENVIRONMENT=${{ github.event.inputs.environment || 'dev' }}" >> $GITHUB_ENV
+
     - name: Checkout repository
       uses: actions/checkout@v3
       with:
-        ref: ${{ github.event.inputs.source_branch }}
+        ref: ${{ env.SOURCE_BRANCH }}
         fetch-depth: 0
         token: ${{ secrets.GH_TOKEN }}
 
@@ -28,12 +37,12 @@ jobs:
       run: |
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git config --global user.name "GitHub Actions Bot"
-        git checkout ${{ github.event.inputs.target_branch }}
-        git merge ${{ github.event.inputs.source_branch }}
-        git push origin ${{ github.event.inputs.target_branch }}
+        git checkout ${{ env.TARGET_BRANCH }}
+        git merge ${{ env.SOURCE_BRANCH }}
+        git push origin ${{ env.TARGET_BRANCH }}
 
     - name: Deploy to environment
       run: |
-        echo "Deploying to the ${{ github.event.inputs.environment }} environment"
+        echo "Deploying to the ${{ env.ENVIRONMENT }} environment"
         # Add your deployment commands here based on the selected environment
         # For example, you can use scp, rsync, or a specific deployment tool (e.g. AWS, GCP, etc.)
