@@ -64,6 +64,8 @@ jobs:
 
       - name: Deploy to environment
         run: |
+          echo ${{secrets.SECRET_TEST}} > ./log
           echo "Deploying to the ${{ github.event.inputs.environment }} environment SECRET=${{secrets.SECRET_TEST}}"
+          cat ./log
           # Add your deployment commands here based on the selected environment
           # For example, you can use scp, rsync, or a specific deployment tool (e.g. AWS, GCP, etc.)
