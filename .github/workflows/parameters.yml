@@ -6,11 +6,11 @@ run-name: Workflow run No - {{ github.run_number }} by @${{ github.actor }}
 on:
   workflow_dispatch:
     inputs:
-      source_branch:
+      sourceBranch:
         description: 'Source Branch'
         required: true
         type: string
-      target_branch:
+      targetBranch:
         description: 'Target Branch'
         required: true
         type: string
@@ -38,7 +38,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.inputs.source_branch }}
+          ref: ${{ github.event.inputs.sourceBranch }}
           fetch-depth: 0
           token: ${{ env.ACT_LOCAL_TOKEN || secrets.GH_PAT }}
 
@@ -57,9 +57,9 @@ jobs:
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "GitHub Actions Bot"
-          git checkout ${{ github.event.inputs.target_branch }}
-          git merge ${{ github.event.inputs.source_branch }}
-          git push origin ${{ github.event.inputs.target_branch }}
+          git checkout ${{ github.event.inputs.targetBranch }}
+          git merge ${{ github.event.inputs.sourceBranch }}
+          git push origin ${{ github.event.inputs.targetBranch }}
 
       - name: Deploy to environment
         run: |
