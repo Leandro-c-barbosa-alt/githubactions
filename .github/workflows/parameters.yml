@@ -1,5 +1,8 @@
 name: Custom Deploy Workflow
 
+# Workflow run name
+run-name: Workflow run No - {{ github.run_number }} by @${{ github.actor }}
+
 on:
   workflow_dispatch:
     inputs:
@@ -29,35 +32,37 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      TARGET_ENVIRONMENT: ${{inputs.targetEnv}}
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        ref: ${{ github.event.inputs.source_branch }}
-        fetch-depth: 0
-        token: ${{ env.ACT_LOCAL_TOKEN || secrets.GH_PAT }}
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.source_branch }}
+          fetch-depth: 0
+          token: ${{ env.ACT_LOCAL_TOKEN || secrets.GH_PAT }}
 
-     # check env and branch
+      # check env and branch
       - name: Check branch and env
         run: |
           if [ "${{ env.TARGET_ENVIRONMENT }}" == "CI" ] && [ "${{ inputs.targetBranch }}" != "dev" ]; then
             echo "::error:: CI environment can only be used with develop"
             exit 1
-         elif [ "${{ env.TARGET_ENVIRONMENT }}" == "PRODUCTION" ] && [ "${{ inputs.targetBranch }}" != "main" ]; then
+          elif [ "${{ env.TARGET_ENVIRONMENT }}" == "PRODUCTION" ] && [ "${{ inputs.targetBranch }}" != "main" ]; then
             echo "::error:: PRODUCTION environment can only be used with main branch"
             exit 1
           fi
 
-    - name: Merge target branch
-      run: |
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git config --global user.name "GitHub Actions Bot"
-        git checkout ${{ github.event.inputs.target_branch }}
-        git merge ${{ github.event.inputs.source_branch }}
-        git push origin ${{ github.event.inputs.target_branch }}
+      - name: Merge target branch
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "GitHub Actions Bot"
+          git checkout ${{ github.event.inputs.target_branch }}
+          git merge ${{ github.event.inputs.source_branch }}
+          git push origin ${{ github.event.inputs.target_branch }}
 
-    - name: Deploy to environment
-      run: |
-        echo "Deploying to the ${{ github.event.inputs.environment }} environment SECRET=${{secrets.SECRET_TEST}}"
-        # Add your deployment commands here based on the selected environment
-        # For example, you can use scp, rsync, or a specific deployment tool (e.g. AWS, GCP, etc.)
+      - name: Deploy to environment
+        run: |
+          echo "Deploying to the ${{ github.event.inputs.environment }} environment SECRET=${{secrets.SECRET_TEST}}"
+          # Add your deployment commands here based on the selected environment
+          # For example, you can use scp, rsync, or a specific deployment tool (e.g. AWS, GCP, etc.)
