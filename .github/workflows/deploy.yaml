@@ -1,0 +1,25 @@
+name: Workflow based on Label
+
+# Workflow run name
+run-name: Workflow run Deploy
+
+on:
+  pull_request:
+    types:
+      - labeled
+    branches:
+      - develop
+    paths-ignore:
+      - "**/README.md"
+
+jobs:
+  execute_with_label:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run based on label
+        if: contains(github.event.pull_request.labels.*.name, 'Ready for Deploy')
+        run: echo "This is a workflow executed when the 'Ready for Deploy' label is added to the pull request."

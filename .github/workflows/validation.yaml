@@ -1,0 +1,23 @@
+name: Validate PR
+
+# Workflow run name
+run-name: Workflow run Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - develop
+    paths-ignore:
+      - "**/README.md"
+
+jobs:
+  validate_pr:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run validation
+        run: echo "This is a validation workflow triggered when a pull request is opened."
