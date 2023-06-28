@@ -15,11 +15,11 @@ on:
 jobs:
   execute_with_label:
     runs-on: ubuntu-latest
+    if: (((startswith(github.head_ref,'feature') || startswith(github.head_ref,'defect')) && (github.event_name == 'pull_request')) && (github.event.label.name == 'Ready for Deploy'))
     
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
       - name: Run based on label
-        if: github.event.label.name == 'Ready for Deploy'
         run: echo "This is a workflow executed when the 'Ready for Deploy' label is added to the pull request."
