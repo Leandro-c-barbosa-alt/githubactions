@@ -1,4 +1,4 @@
-name: Validate PR
+name: VALIDATION
 
 # Workflow run name
 run-name: Workflow run Validation
@@ -22,4 +22,4 @@ jobs:
       - name: Run validation
         run: echo "This is a validation workflow triggered when a pull request is opened."
 
-        
+
