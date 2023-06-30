@@ -33,7 +33,7 @@ jobs:
       - name: Run a multi-line script
         run: sleep 15s
 
-    test:
-        name: Test and lint
-        uses: ./.github/workflows/2.yml
+  test:
+    name: Test
+    uses: ./.github/workflows/2.yml
      
