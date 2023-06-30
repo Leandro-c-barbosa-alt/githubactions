@@ -33,6 +33,6 @@ jobs:
       - name: Run a multi-line script
         run: sleep 15s
 
-  uses: github.com/Leandro-c-barbosa-alt/githubactions/blob/main/.github/workflows/2.yml@main
+      - uses: github.com/Leandro-c-barbosa-alt/githubactions/blob/main/.github/workflows/2.yml@main
 
      
