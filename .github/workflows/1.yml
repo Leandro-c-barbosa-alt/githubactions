@@ -37,7 +37,7 @@ jobs:
   test:
     name: Test
     needs: build
-    uses: ${{ if eq(env.MY_ENV, '123') }}./.github/workflows/2.yml@v1${{ endif }}
+    uses: ${{ if eq(env.MY_ENV, '123') }}./.github/workflows/2.yml@1${{ endif }}
     with:
       python_test_versions: 3.7
     secrets:
