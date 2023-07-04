@@ -34,7 +34,7 @@ jobs:
         uses: benc-uk/workflow-dispatch@v1 
         with:
           workflow: 2.yml
-          inputs: { "MY_ENV2": "value1" }
+          inputs: '{"MY_ENV2": "value1"}'
 
   test2:
     if: ${{ inputs.targetEnv }} != 'SIT'
