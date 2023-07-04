@@ -21,8 +21,20 @@ jobs:
   test:
     name: Test
     needs: build
-    uses: ${{ if eq(env.MY_ENV, '123') }}./.github/workflows/2.yml@v1${{ endif }}
-    with:
-      python_test_versions: 3.7
-    secrets:
-      MY_ENV2: abc
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up test environment
+        id: setup
+        run: |
+          if [ "${{ env.MY_ENV }}" == "123" ]; then
+            echo "::set-output name=testScript::./.github/workflows/2.yml"
+          else
+            echo "::set-output name=testScript::./.github/workflows/3.yml"
+          fi
+
+      - name: Run test script
+        uses: ${{ steps.setup.outputs.testScript }}
+        with:
+          python_test_versions: 3.7
+        secrets:
+            MY_ENV2: abc
