@@ -42,5 +42,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Run other workflows
-        uses: ./.github/workflows/3.yml
+      - name: Run SIT workflow
+        uses: benc-uk/workflow-dispatch@v1 
+        with:
+          workflow: 3.yml
+          token: ${{ secrets.GH_TOKEN }}
