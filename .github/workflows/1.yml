@@ -31,8 +31,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run SIT workflow
-        uses: ./.github/workflows/2.yml
+        uses: benc-uk/workflow-dispatch@v1 
         with:
+          workflow: ./.github/workflows/2.yml
           MY_ENV2: value1
 
   test2:
