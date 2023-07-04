@@ -47,9 +47,18 @@ jobs:
           fi
 
       - name: Run workflow
+        uses: ${{ steps.setup.outputs.workflowFile }}
+        with:
+          MY_ENV2: value1
+          # Adicione outros parâmetros conforme necessário
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: |
-          echo ${{ inputs.targetEnv }}
-          gh workflow run ${{ steps.setup.outputs.workflowFile }} -R ${{ github.repository }}
+
+
+     # - name: Run workflow
+     #   env:
+     #     GH_TOKEN: ${{ secrets.GH_TOKEN }}
+     #   run: |
+     #     echo ${{ inputs.targetEnv }}
+     #     gh workflow run ${{ steps.setup.outputs.workflowFile }} -R ${{ github.repository }}
           
