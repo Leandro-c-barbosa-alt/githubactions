@@ -26,19 +26,19 @@ jobs:
         run: echo Hello, world!
 
   test1:
-    if: ${{ inputs.targetEnv }} == 'SIT'
+    if: ${{ github.event.inputs.targetEnv }} == 'SIT'
     needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Run SIT workflow
-        uses: benc-uk/workflow-dispatch@v1 
+        uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: 2.yml
           token: ${{ secrets.GH_TOKEN }}
           inputs: '{"MY_ENV2": "value1"}'
 
   test2:
-    if: ${{ inputs.targetEnv }} != 'SIT'
+    if: ${{ github.event.inputs.targetEnv }} != 'SIT'
     needs: build
     runs-on: ubuntu-latest
     steps:
