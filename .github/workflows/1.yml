@@ -33,8 +33,9 @@ jobs:
       - name: Run SIT workflow
         uses: benc-uk/workflow-dispatch@v1 
         with:
-          workflow: ./.github/workflows/2.yml
-          MY_ENV2: value1
+          workflow: .github/workflows/2.yml
+          inputs: 
+            MY_ENV2: value1
 
   test2:
     if: ${{ inputs.targetEnv }} != 'SIT'
