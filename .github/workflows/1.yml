@@ -50,4 +50,4 @@ jobs:
         run: |
           echo ${{ inputs.targetEnv }}
           workflowFile=${{ steps.setup.outputs.workflowFile }}
-          gh workflow run $workflowFile -R ${{ github.repository }} -p MY_ENV2=abc
+          gh workflow run $workflowFile -R ${{ github.repository }} -F MY_ENV2=abc
