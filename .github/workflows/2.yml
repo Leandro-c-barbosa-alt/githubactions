@@ -12,8 +12,10 @@ on:
         required: false
         type: string
       MY_ENV2:
+        description: 'Input for my workflow'
         required: true
         type: string
+        default: 'default value'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
