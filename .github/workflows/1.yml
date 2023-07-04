@@ -26,7 +26,6 @@ jobs:
       - name: Set up test environment
         id: setup
         run: |
-          echo ${{ env.MY_ENV }}
           if [ "${{ env.MY_ENV }}" == "123" ]; then
             echo "Workflow file: .github/workflows/2.yml"
             echo "::set-output name=workflowFile::.github/workflows/2.yml"
@@ -37,5 +36,6 @@ jobs:
 
       - name: Run workflow
         run: |
+          echo ${{ env.MY_ENV }}
           workflowFile=${{ steps.setup.outputs.workflowFile }}
           gh workflow run $workflowFile -R ${{ github.repository }} -p MY_ENV2=abc
