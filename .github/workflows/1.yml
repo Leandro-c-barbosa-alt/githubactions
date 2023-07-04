@@ -26,7 +26,6 @@ jobs:
         run: echo Hello, world!
 
   test1:
-    if: ${{ github.event.inputs.targetEnv }} == 'SIT'
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -36,9 +35,9 @@ jobs:
           workflow: 2.yml
           token: ${{ secrets.GH_TOKEN }}
           inputs: '{"MY_ENV2": "value1"}'
+        if: ${{ github.event.inputs.targetEnv }} == 'SIT'
 
   test2:
-    if: ${{ github.event.inputs.targetEnv }} != 'SIT'
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -47,3 +46,4 @@ jobs:
         with:
           workflow: 3.yml
           token: ${{ secrets.GH_TOKEN }}
+        if: ${{ github.event.inputs.targetEnv }} != 'SIT'
