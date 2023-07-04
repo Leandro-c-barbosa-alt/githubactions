@@ -1,8 +1,6 @@
 name: FIRST
 
 on:
-  pull_request:
-    branches: [ "main" ]
   workflow_dispatch:
     inputs:
       targetEnv:
@@ -18,41 +16,32 @@ on:
         - STG
         - PROD
 
+env:
+  TARGET_ENV: ${{ github.event.inputs.targetEnv }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    env: 
-      MY_ENV: 123
     steps:
       - uses: actions/checkout@v3
 
       - name: Run a one-line script
         run: echo Hello, world!
 
-  test:
-    name: Test
+  test1:
+    if: env.TARGET_ENV == 'SIT'
     needs: build
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        targetEnv: [DEV-CI, SIT, UAT, STG, PROD]
     steps:
-      - name: Set up test environment
-        id: setup
-        run: |
-          if [ "${{ matrix.targetEnv }}" == "SIT" ]; then
-            echo "Workflow file: .github/workflows/2.yml"
-            echo "::set-output name=workflowFile::.github/workflows/2.yml"
-          else
-            echo "Workflow file: .github/workflows/3.yml"
-            echo "::set-output name=workflowFile::.github/workflows/3.yml"
-          fi
-
-      - name: Run workflow
-        if: ${{ matrix.targetEnv == inputs.targetEnv }}
-        uses: ${{ steps.setup.outputs.workflowFile }}
+      - name: Run SIT workflow
+        uses: ./.github/workflows/2.yml
         with:
           MY_ENV2: value1
-          # Adicione outros parâmetros conforme necessário
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+  test2:
+    if: env.TARGET_ENV != 'SIT'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run other workflows
+        uses: ./.github/workflows/3.yml
