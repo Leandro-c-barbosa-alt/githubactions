@@ -51,5 +51,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           echo ${{ inputs.targetEnv }}
-          workflowFile=${{ steps.setup.outputs.workflowFile }}
-          gh workflow run $workflowFile -R ${{ github.repository }} -f MY_ENV2=abc
+          gh workflow run ${{ steps.setup.outputs.workflowFile }} -R ${{ github.repository }} -f MY_ENV2=abc
