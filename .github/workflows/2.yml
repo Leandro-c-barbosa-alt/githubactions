@@ -6,6 +6,14 @@ name: SECOND
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   workflow_call:
+    inputs:
+      python_test_versions:
+        default: "['3.8']"
+        required: false
+        type: string
+    secrets:
+      MY_ENV2:
+        required: true
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -24,7 +32,9 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
-        run: echo Hello, world from the second one!
+        run: |
+          echo Hello, world from the second one!
+          echo ${{ secrets.MY_ENV2 }}
 
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script

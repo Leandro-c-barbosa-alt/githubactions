@@ -19,7 +19,8 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
+    env: 
+      MY_ENV: 123
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -37,4 +38,8 @@ jobs:
     name: Test
     needs: build
     uses: ./.github/workflows/2.yml
+    with:
+      python_test_versions: 3.7
+    secrets:
+        MY_ENV2: ${{ env.MY_ENV }}
      
