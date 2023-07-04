@@ -34,6 +34,7 @@ jobs:
         uses: benc-uk/workflow-dispatch@v1 
         with:
           workflow: 2.yml
+          token: ${{ secrets.GH_TOKEN }}
           inputs: '{"MY_ENV2": "value1"}'
 
   test2:
