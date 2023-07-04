@@ -13,6 +13,7 @@ on:
         type: string
       MY_ENV2:
         required: true
+        type: string
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
