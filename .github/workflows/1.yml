@@ -1,8 +1,6 @@
 name: FIRST
 
 on:
-  #push:
-  #  branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
@@ -19,6 +17,7 @@ on:
         - UAT
         - STG
         - PROD
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -34,11 +33,14 @@ jobs:
     name: Test
     needs: build
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        targetEnv: [DEV-CI, SIT, UAT, STG, PROD]
     steps:
       - name: Set up test environment
         id: setup
         run: |
-          if [ "${{ inputs.targetEnv }}" == "SIT" ]; then
+          if [ "${{ matrix.targetEnv }}" == "SIT" ]; then
             echo "Workflow file: .github/workflows/2.yml"
             echo "::set-output name=workflowFile::.github/workflows/2.yml"
           else
@@ -47,18 +49,10 @@ jobs:
           fi
 
       - name: Run workflow
+        if: ${{ matrix.targetEnv == inputs.targetEnv }}
         uses: ${{ steps.setup.outputs.workflowFile }}
         with:
           MY_ENV2: value1
           # Adicione outros parâmetros conforme necessário
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-
-
-     # - name: Run workflow
-     #   env:
-     #     GH_TOKEN: ${{ secrets.GH_TOKEN }}
-     #   run: |
-     #     echo ${{ inputs.targetEnv }}
-     #     gh workflow run ${{ steps.setup.outputs.workflowFile }} -R ${{ github.repository }}
-          
