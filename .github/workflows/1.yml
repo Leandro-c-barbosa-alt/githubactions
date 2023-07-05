@@ -37,10 +37,10 @@ jobs:
         run: |
           if [ "${{ github.event.inputs.targetEnv }}" == "DEV-CI" ]; then
             echo "Workflow file: .github/workflows/2.yml"
-            gh workflow run .github/workflows/2.yml -R ${{ github.repository }} -f MY_ENV2=123321 -f MY_ENV=aaabbb   
+            gh workflow run .github/workflows/2.yml -R ${{ github.repository }} -f MY_ENV2=123321 -f MY_ENV=CI   
           elif [ "${{ github.event.inputs.targetEnv }}" == "SIT" ]; then
             echo "Workflow file: .github/workflows/3.yml"
-            gh workflow run .github/workflows/3.yml -R ${{ github.repository }} -f MY_ENV2=123321 -f MY_ENV=aaabbb
+            gh workflow run .github/workflows/3.yml -R ${{ github.repository }} -f MY_ENV2=123321 -f MY_ENV=PRODUCTION
           fi     
           
   # while :
