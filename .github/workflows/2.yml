@@ -13,16 +13,16 @@ on:
         default: "['3.8']"
         required: false
         type: string
-        MY_ENV:
-          description: 'Input for my workflow'
-          required: true
-          type: string
-          default: 'default value'
-        MY_ENV2:
-          description: 'Input for my workflow'
-          required: true
-          type: string
-          default: 'default value'
+      MY_ENV:
+        description: 'Input for my workflow'
+        required: true
+        type: string
+        default: 'default value'
+      MY_ENV2:
+        description: 'Input for my workflow'
+        required: true
+        type: string
+        default: 'default value'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
