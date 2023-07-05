@@ -12,8 +12,7 @@ on:
       python_test_versions:
         default: "['3.8']"
         required: false
-        type: string
-    secrets:  
+        type: string  
       MY_ENV:
         description: 'Input for my workflow'
         required: true
