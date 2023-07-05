@@ -29,7 +29,7 @@ jobs:
     name: Test
     needs: build
     if: ${{ github.event.inputs.targetEnv != 'None' }}
-    uses: ${{ if eq(github.event.inputs.targetEnv, 'DEV-CI') }}.github/workflows/2.yml${{ else if eq(github.event.inputs.targetEnv, 'SIT') }}.github/workflows/3.yml${{ endif }}
+    uses: ${{ if eq(github.event.inputs.targetEnv, 'DEV-CI') }}.github/workflows/2.yml${{ else if eq(github.event.inputs.targetEnv, 'SIT') }}.github/workflows/3.yml${{ endif }}@v1
     with:
       python_test_versions: 3.7
     env:
