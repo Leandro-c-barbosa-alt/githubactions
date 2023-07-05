@@ -32,7 +32,7 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.targetEnv }}
+    environment: ${{ if ne(inputs.targetEnv, 'None') }}${{ inputs.targetEnv }}${{ endif }}
     env:
       TARGET_ENVIRONMENT: ${{inputs.targetEnv}}
     steps:
@@ -43,24 +43,24 @@ jobs:
           fetch-depth: 0
           token: ${{ env.ACT_LOCAL_TOKEN || secrets.GH_PAT }}
 
-      # check env and branch
-      - name: Check branch and env
-        run: |
-          if [ "${{ env.TARGET_ENVIRONMENT }}" == "CI" ] && [ "${{ inputs.targetBranch }}" != "dev" ]; then
-            echo "::error:: CI environment can only be used with develop"
-            exit 1
-          elif [ "${{ env.TARGET_ENVIRONMENT }}" == "PRODUCTION" ] && [ "${{ inputs.targetBranch }}" != "main" ]; then
-            echo "::error:: PRODUCTION environment can only be used with main branch"
-            exit 1
-          fi
+      # # check env and branch
+      # - name: Check branch and env
+      #   run: |
+      #     if [ "${{ env.TARGET_ENVIRONMENT }}" == "CI" ] && [ "${{ inputs.targetBranch }}" != "dev" ]; then
+      #       echo "::error:: CI environment can only be used with develop"
+      #       exit 1
+      #     elif [ "${{ env.TARGET_ENVIRONMENT }}" == "PRODUCTION" ] && [ "${{ inputs.targetBranch }}" != "main" ]; then
+      #       echo "::error:: PRODUCTION environment can only be used with main branch"
+      #       exit 1
+      #     fi
 
-      - name: Merge target branch
-        run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "GitHub Actions Bot"
-          git checkout ${{ github.event.inputs.targetBranch }}
-          git merge ${{ github.event.inputs.sourceBranch }}
-          git push origin ${{ github.event.inputs.targetBranch }}
+      # - name: Merge target branch
+      #   run: |
+      #     git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      #     git config --global user.name "GitHub Actions Bot"
+      #     git checkout ${{ github.event.inputs.targetBranch }}
+      #     git merge ${{ github.event.inputs.sourceBranch }}
+      #     git push origin ${{ github.event.inputs.targetBranch }}
 
       - name: Deploy to environment
         run: |
