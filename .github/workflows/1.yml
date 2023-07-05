@@ -27,25 +27,44 @@ jobs:
 
   test:
     name: Test
+    if: ${{ github.event.inputs.targetEnv != 'None' }}
     needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up test environment
-        id: setup
-        run: |
-          if [ "${{ github.event.inputs.targetEnv }}" == "SIT" ]; then
-            echo "Workflow file: .github/workflows/2.yml"
-            echo "::set-output name=workflowFile::.github/workflows/2.yml"
-          else
-            echo "Workflow file: .github/workflows/3.yml"
-            echo "::set-output name=workflowFile::.github/workflows/3.yml"
-          fi
-      - name: Run workflow
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: |
-          echo ${{  github.event.inputs.targetEnv  }}
-          gh workflow run ${{ steps.setup.outputs.workflowFile }} -R ${{ github.repository }} -f MY_ENV2=123321    
+    uses: {{ if eq(github.event.inputs.targetEnv, 'DEV-CI') }}.github/workflows/2.yml${{ else if eq(github.event.inputs.targetEnv, 'SIT') }}.github/workflows/3.yml${{ endif }}
+    with:
+      python_test_versions: 3.7
+    env:
+      MY_ENV2: ${{ github.event.inputs.targetEnv }}
+      SFDX_AUTH_URL_SIT: ${{ secrets.SFDX_AUTH_URL_SIT || '' }}
+      SFDXUSERNAME_SIT: ${{ secrets.SFDXUSERNAME_SIT || '' }}
+      SFDX_AUTH_URL_UAT: ${{ secrets.SFDX_AUTH_URL_UAT || '' }}
+      SFDXUSERNAME_UAT: ${{ secrets.SFDXUSERNAME_UAT || '' }}
+      SFDX_AUTH_URL_STG: ${{ secrets.SFDX_AUTH_URL_STG || '' }}
+      SFDXUSERNAME_STG: ${{ secrets.SFDXUSERNAME_STG || '' }}
+      SFDX_AUTH_URL_PROD: ${{ secrets.SFDX_AUTH_URL_PROD || '' }}
+      SFDXUSERNAME_PROD: ${{ secrets.SFDXUSERNAME_PROD || '' }}
+
+
+  # test:
+  #   name: Test
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Set up test environment
+  #       id: setup
+  #       run: |
+  #         if [ "${{ github.event.inputs.targetEnv }}" == "SIT" ]; then
+  #           echo "Workflow file: .github/workflows/2.yml"
+  #           echo "::set-output name=workflowFile::.github/workflows/2.yml"
+  #         else
+  #           echo "Workflow file: .github/workflows/3.yml"
+  #           echo "::set-output name=workflowFile::.github/workflows/3.yml"
+  #         fi
+  #     - name: Run workflow
+  #       env:
+  #         GH_TOKEN: ${{ secrets.GH_TOKEN }}
+  #       run: |
+  #         echo ${{  github.event.inputs.targetEnv  }}
+  #         gh workflow run ${{ steps.setup.outputs.workflowFile }} -R ${{ github.repository }} -f MY_ENV2=123321    
           
   # while :
   #   do
@@ -55,29 +74,3 @@ jobs:
   #     fi
   #     sleep 10
   #   done 
-
-
-
-  # test1:
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Run SIT workflow
-  #       if: ${{ github.event.inputs.targetEnv }} == 'SIT'
-  #       uses: benc-uk/workflow-dispatch@v1
-  #       with:
-  #         workflow: 2.yml
-  #         token: ${{ secrets.GH_TOKEN }}
-  #         inputs: '{"MY_ENV2": "value1"}'
-        
-  # test2:
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Run SIT workflow
-  #       if: ${{ github.event.inputs.targetEnv }} != 'SIT'
-  #       uses: benc-uk/workflow-dispatch@v1 
-  #       with:
-  #         workflow: 3.yml
-  #         token: ${{ secrets.GH_TOKEN }}
-        
