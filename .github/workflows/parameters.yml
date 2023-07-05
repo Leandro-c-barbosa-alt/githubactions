@@ -36,12 +36,12 @@ jobs:
     env:
       TARGET_ENVIRONMENT: ${{inputs.targetEnv}}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.inputs.sourceBranch }}
-          fetch-depth: 0
-          token: ${{ env.ACT_LOCAL_TOKEN || secrets.GH_PAT }}
+      # - name: Checkout repository
+      #   uses: actions/checkout@v3
+      #   with:
+      #     ref: ${{ github.event.inputs.sourceBranch }}
+      #     fetch-depth: 0
+      #     token: ${{ env.ACT_LOCAL_TOKEN || secrets.GH_PAT }}
 
       # # check env and branch
       # - name: Check branch and env
