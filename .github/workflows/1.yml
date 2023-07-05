@@ -46,14 +46,15 @@ jobs:
         run: |
           echo ${{  github.event.inputs.targetEnv  }}
           gh workflow run ${{ steps.setup.outputs.workflowFile }} -R ${{ github.repository }} -f MY_ENV2=123321    
-          while :
-            do
-              status=$(gh api "repos/${{ github.repository }}/actions/runs" --jq ".workflow_runs[] | select(.name == \"SECOND\") | .status")
-              if [[ "$status" == "completed" ]]; then
-                break
-              fi
-              sleep 10
-            done 
+          
+  # while :
+  #   do
+  #     status=$(gh api "repos/${{ github.repository }}/actions/runs" --jq ".workflow_runs[] | select(.name == \"SECOND\") | .status")
+  #     if [[ "$status" == "completed" ]]; then
+  #       break
+  #     fi
+  #     sleep 10
+  #   done 
 
 
 
