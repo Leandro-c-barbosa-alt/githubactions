@@ -46,7 +46,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           echo ${{  github.event.inputs.targetEnv  }}
-          gh workflow run ${{ steps.setup.outputs.workflowFile }} -R ${{ github.repository }} -f MY_ENV2=123321    
+          gh workflow run ${{ steps.setup.outputs.workflowFile }} -R ${{ github.repository }} -f MY_ENV2=123321 -f MY_ENV=aaabbb   
           
   # while :
   #   do
