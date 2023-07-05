@@ -25,10 +25,10 @@ jobs:
       - name: Run a one-line script
         run: echo Hello, world!
 
-  test:
+  posrun:
     name: Test
-    if: ${{ github.event.inputs.targetEnv != 'None' }}
     needs: build
+    if: ${{ github.event.inputs.targetEnv != 'None' }}
     uses: ${{ if eq(github.event.inputs.targetEnv, 'DEV-CI') }}.github/workflows/2.yml${{ else if eq(github.event.inputs.targetEnv, 'SIT') }}.github/workflows/3.yml${{ endif }}
     with:
       python_test_versions: 3.7
