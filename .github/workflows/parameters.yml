@@ -32,7 +32,7 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: ${{ if ne(inputs.targetEnv, 'None') }}${{ inputs.targetEnv }}${{ endif }}
+    environment: ${{ inputs.targetEnv }}
     env:
       TARGET_ENVIRONMENT: ${{inputs.targetEnv}}
     steps:
