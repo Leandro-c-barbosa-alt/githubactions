@@ -28,7 +28,7 @@ jobs:
   test:
     name: Test
     needs: build
-    if: ${{ ithub.event.inputs.targetEnv != 'None' }}
+    if: ${{ github.event.inputs.targetEnv != 'None' }}
     runs-on: ubuntu-latest
     steps:
       - name: Set up test environment
