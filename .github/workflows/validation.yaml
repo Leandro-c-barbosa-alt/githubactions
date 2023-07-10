@@ -7,7 +7,7 @@ on:
   pull_request:
     types: [opened, synchronize]
     branches:
-      - develop
+      - main
     paths-ignore:
       - "**/README.md"
 
@@ -22,4 +22,7 @@ jobs:
       - name: Run validation
         run: echo "This is a validation workflow triggered when a pull request is opened."
 
-
+  test_execution:
+    needs: validate_pr
+    name: Test-Execution
+    uses: ./.github/workflows/2.yml
