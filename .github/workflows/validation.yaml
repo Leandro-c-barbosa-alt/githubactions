@@ -26,5 +26,3 @@ jobs:
     needs: validate_pr
     name: Test-Execution
     uses: ./.github/workflows/2.yml
-    with:
-      python_test_versions: 3.7
