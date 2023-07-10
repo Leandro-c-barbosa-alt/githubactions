@@ -22,4 +22,9 @@ jobs:
       - name: Run validation
         run: echo "This is a validation workflow triggered when a pull request is opened."
 
-
+  test_execution:
+    needs: installation_authenticate_deploy
+    name: Test-Execution
+    uses: ./.github/workflows/2.yml
+    with:
+      python_test_versions: 3.7
