@@ -1,7 +1,7 @@
 name: DEPLOY
 
 # Workflow run name
-run-name: Workflow run Deploy
+run-name: Workflow run Deploy - {{ github.run_number }} by @${{ github.actor }}
 
 on:
   pull_request:
