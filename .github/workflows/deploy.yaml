@@ -15,7 +15,7 @@ on:
 jobs:
   execute_with_label:
     runs-on: ubuntu-latest
-    if: (((startswith(github.head_ref,'feature') || startswith(github.head_ref,'defect')) && (github.event_name == 'pull_request')) && (github.event.label.name == 'Ready for Deploy'))
+    if: (((startswith(github.head_ref,'feature') || startswith(github.head_ref,'defect')) && (github.event_name == 'pull_request')) && (github.event.label.name == 'Ready for Deploy') && contains('["Leandro-c-barbosa-alt", "kiran-waghamare-acct", "paulo-pompeu-alpt", "gitdomelo"]', github.actor))
     
     steps:
       - name: Checkout repository
