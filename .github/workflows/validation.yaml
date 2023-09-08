@@ -36,13 +36,12 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Run validation
-        run: echo "This is a validation workflow triggered when a pull request is opened."
-
-      - name: Run validation
-        run: docker exec  zip --version
-
-
+        run: pwd
         
+      - name: Run validation
+        run: docker ps
+
+
   test_execution:
     needs: validate_pr
     name: Test-Execution
