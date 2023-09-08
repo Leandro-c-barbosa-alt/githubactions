@@ -39,9 +39,10 @@ jobs:
         run: echo "This is a validation workflow triggered when a pull request is opened."
 
       - name: Run validation
-        run: zip --version
+        run: docker exec  zip --version
 
 
+        
   test_execution:
     needs: validate_pr
     name: Test-Execution
