@@ -14,8 +14,8 @@ on:
 jobs:
   validate_pr:
     runs-on: ubuntu-latest
-    container:
-      image: leandrocbarbosaalt/public-ubuntu:latest
+    # container:
+    #   image: leandrocbarbosaalt/public-ubuntu:latest
 
     steps:
 
