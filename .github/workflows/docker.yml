@@ -19,5 +19,5 @@ jobs:
 
     - name: Build and Push Docker Image
       run: |
-        docker build -t leandrocbarbosaalt/acct-sf-metadata-base:latest .
-        docker push leandrocbarbosaalt/acct-sf-metadata-base:latest
+        docker build -t leandrocbarbosaalt/public-ubuntu:latest .
+        docker push leandrocbarbosaalt/public-ubuntu:latest
