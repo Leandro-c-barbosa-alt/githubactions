@@ -15,7 +15,7 @@ jobs:
   validate_pr:
     runs-on: ubuntu-latest
     container:
-      image: leandrocbarbosaalt/acct-sf-metadata-base:latest
+      image: leandrocbarbosaalt/public-ubuntu:latest
 
     steps:
 
