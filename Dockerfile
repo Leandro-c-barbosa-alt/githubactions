@@ -13,6 +13,7 @@ RUN apt-get clean -y && \
     apt install openjdk-8-jdk -y && \
     apt install -y jq && \
     apt install -y grep && \
+    apt install -y lsb-release && \
     apt autoremove -y
 
 # Define o diretório de trabalho
