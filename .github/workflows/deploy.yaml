@@ -17,7 +17,22 @@ jobs:
     runs-on: ubuntu-latest
     if: (((startswith(github.head_ref,'feature') || startswith(github.head_ref,'defect')) && (github.event_name == 'pull_request')) && (github.event.label.name == 'Ready for Deploy') && contains('["Leandro-c-barbosa-alt", "kiran-waghamare-acct", "paulo-pompeu-alpt", "gitdomelo"]', github.actor))
     
+    
     steps:
+
+      # Install required OS packages
+      - name: Install OS dependencies
+        run: |
+          sudo apt-get clean -y
+          sudo apt-get update -y
+          sudo apt --only-upgrade install -y zip
+          sudo apt --only-upgrade install -y curl
+          sudo apt --only-upgrade install -y wget
+          sudo apt install openjdk-8-jdk -y
+          sudo apt --only-upgrade install jq -y
+          sudo apt --only-upgrade install grep -y
+          sudo apt autoremove -y
+
       - name: Checkout repository
         uses: actions/checkout@v2
 
