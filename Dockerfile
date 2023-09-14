@@ -1,32 +1,57 @@
 # Use a imagem oficial do Ubuntu como base
-FROM ubuntu:latest
+FROM ubuntu:22.04
 
 # Evita que algumas interações sejam solicitadas durante a instalação de pacotes
 ENV DEBIAN_FRONTEND=noninteractive
+ENV GITHUB_PATH="$HOME/sfdx/bin"
+ENV PATH="/root/sfdx/bin/:${PATH}"
 
 # Realiza as atualizações e instalações requeridas
-RUN apt-get clean -y && \
-    apt-get update -y && \
-    apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev wget libbz2-dev -y && \
-    apt install -y zip && \
-    apt install -y curl && \
-    apt install openjdk-8-jdk -y && \
-    apt install -y jq && \
-    apt install -y grep && \
-    apt install -y lsb-release && \
+RUN apt-get update -y && \
     apt install -y software-properties-common && \
     add-apt-repository ppa:deadsnakes/ppa && \
-    apt install -y python3.7 && \
-    apt install -y python3-pip && \
+    apt install -y \
+    build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev \
+    libssl-dev libsqlite3-dev libreadline-dev libffi-dev wget libbz2-dev \
+    zip curl openjdk-8-jdk grep jq lsb-release \
+    python3.7 python3-pip coreutils python-is-python3 git && \
+    apt-get update -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
     python3 -m pip install --upgrade pip && \
-    apt autoremove -y
+    wget https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable/sfdx-linux-x64.tar.xz && \
+    mkdir ~/sfdx && \
+    tar xJf sfdx-linux-x64.tar.xz -C ~/sfdx --strip-components 1 && \
+    rm -f sfdx-linux-x64.tar.xz && \
+    /root/sfdx/bin/sfdx plugins:install @salesforce/sfdx-scanner
 
-RUN apt install -y coreutils && \
-    apt install -y python-is-python3 && \
-    apt install -y git
+# # Realiza as atualizações e instalações requeridas
+# RUN apt-get update -y && \
+#     apt install -y build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev wget libbz2-dev -y && \
+#     apt install -y zip && \
+#     apt install -y curl && \
+#     apt install openjdk-8-jdk -y && \
+#     apt install -y jq && \
+#     apt install -y grep && \
+#     apt install -y lsb-release && \
+#     apt install -y software-properties-common && \
+#     add-apt-repository ppa:deadsnakes/ppa && \
+#     apt install -y python3.7 && \
+#     apt install -y python3-pip && \
+#     python3 -m pip install --upgrade pip && \
+#     apt install -y coreutils && \
+#     apt install -y python-is-python3 && \
+#     apt install -y git && \
+#     rm -rf /var/lib/apt/lists/* && \
+#     apt-get clean -y && \
+#     apt autoremove -y && \
+#     wget https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable/sfdx-linux-x64.tar.xz && \
+#     mkdir ~/sfdx && \
+#     tar xJf sfdx-linux-x64.tar.xz -C ~/sfdx --strip-components 1 && \
+#     rm -f sfdx-linux-x64.tar.xz && \
+#     /root/sfdx/bin/sfdx plugins:install @salesforce/sfdx-scanner
 
-
-# RUN apt install -y acl && \
+# RUN apt install -y acl && \   
 #     apt install -y aria2 && \
 #     apt install -y autoconf && \
 #     apt install -y automake && \
@@ -116,29 +141,9 @@ RUN apt install -y coreutils && \
 #     apt install -y zip && \
 #     apt install -y zsync && \
 #     apt install -y git
-
-RUN wget https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable/sfdx-linux-x64.tar.xz
-
-RUN mkdir ~/sfdx && ls -la
-
-RUN echo $HOME
-
-RUN tar xJf sfdx-linux-x64.tar.xz -C ~/sfdx --strip-components 1
-ENV GITHUB_PATH="$HOME/sfdx/bin"
-ENV PATH="/root/sfdx/bin/:${PATH}"
-
-RUN echo The PATH is $GITHUB_PATH 
-RUN /root/sfdx/bin/sfdx version 
-
-RUN  /root/sfdx/bin/sfdx plugins:install @salesforce/sfdx-scanner
-
-
-
+    
 # Define o diretório de trabalho
 WORKDIR /app
-
-# Copia os arquivos locais para o container
-#COPY . .
 
 # Define o comando padrão para rodar quando iniciar o container
 CMD ["bash"]
