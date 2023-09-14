@@ -15,6 +15,7 @@ RUN apt-get update -y && \
     libssl-dev libsqlite3-dev libreadline-dev libffi-dev wget libbz2-dev \
     zip curl openjdk-8-jdk grep jq lsb-release \
     python3.7 python3-pip coreutils python-is-python3 git && \
+    sudo && \
     apt-get update -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
