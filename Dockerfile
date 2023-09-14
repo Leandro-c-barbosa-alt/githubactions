@@ -9,12 +9,12 @@ ENV PATH="/root/sfdx/bin/:${PATH}"
 # Realiza as atualizações e instalações requeridas
 RUN apt update -y && \
     apt install -y software-properties-common && \
-    add-apt-repository ppa:deadsnakes/ppa
-RUN apt install -y \
+    add-apt-repository ppa:deadsnakes/ppa && \
+    apt install -y \
     build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev \
     libssl-dev libsqlite3-dev libreadline-dev libffi-dev wget libbz2-dev \
     zip curl openjdk-8-jdk grep jq lsb-release \
-    python3.7 python3-pip coreutils python-is-python3 git && \
+    python3.7 python3-pip coreutils python-is-python3 git \
     sudo && \
     apt-get update -y && \
     apt-get clean && \
