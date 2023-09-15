@@ -14,9 +14,8 @@ RUN apt update -y && \
     build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev \
     libssl-dev libsqlite3-dev libreadline-dev libffi-dev wget libbz2-dev \
     zip curl openjdk-8-jdk grep jq lsb-release \
-    python3.7 python3-pip coreutils python-is-python3 git \
-    sudo && \
-    apt-get update -y && \
+    python3.7 python3-pip coreutils python-is-python3 git && \
+    apt install -y sudo && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     python3 -m pip install --upgrade pip && \
