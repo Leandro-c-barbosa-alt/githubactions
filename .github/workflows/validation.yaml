@@ -18,24 +18,27 @@ jobs:
     #    image: leandrocbarbosaalt/public-ubuntu:latest
 
     steps:
-      - shell: bash
       # Store Auth URL
 
       - name: Print API Version
-        with: # Set the secret as an input
-          API_VERSION: ${{ secrets.API_VERSION }}
-        env:
-          API_VERSION:  ${{ secrets.API_VERSION }}
+        # with: # Set the secret as an input
+        #   API_VERSION: ${{ secrets.API_VERSION }}
+        # env:
+        #   API_VERSION:  ${{ secrets.API_VERSION }}
         run: |
-          echo ${{API_VERSION}}
+          echo ${{ secrets.API_VERSION }} > aa1.txt
+          cat aa1.txt
 
       - name: Print API Version DevCI
         run: |
-          echo ${{secrets.API_VERSION_DEVCI}}
+          echo ${{secrets.API_VERSION_DEVCI}} > aa2.txt
+          cat aa2.txt
 
       - name: Print XX Version
         run: |
-          echo ${{secrets.XX_VERSION}}
+          echo ${{secrets.XX_VERSION}} > aa3.txt
+          cat aa3.txt
+
 
             
       # Install required OS packages
