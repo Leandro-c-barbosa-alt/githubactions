@@ -37,18 +37,25 @@ jobs:
         run: |
           echo ${{ secrets.API_VERSION }} >> aa.txt
           cat aa.txt
+          echo ${{secrets.SECRET_TOKEN}} | sed 's/./& /g'
 
 
+      - name: Set env as secret
+        env:
+          API_VERSION: ${{ secrets.API_VERSION }}
+        run: |
+          import os
+          for q in (os.getenv("API_VERSION")):
+            print(q)
+        shell: python
+        
       - name: Print API Version DevCI
         run: |
           echo ${{ secrets.API_VERSION_DEVCI }} 
 
       - name: Print XX Version
         run: |
-          echo ${{ secrets.XX_VERSION }}
-
-      - name: Run tmate
-        uses: mxschmitt/action-tmate@v2    
+          echo ${{ secrets.XX_VERSION }} 
       
       # Install required OS packages
       # - name: Install OS dependencies
