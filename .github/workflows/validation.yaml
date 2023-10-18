@@ -30,15 +30,15 @@ jobs:
         # env:
         #   API_VERSION:  ${{ secrets.API_VERSION }}
         run: |
-          echo {{ env.API_VERSION }} 
+          echo ${{ env.API_VERSION }} 
 
       - name: Print API Version DevCI
         run: |
-          echo {{ env.API_VERSION_DEVCI }} 
+          echo ${{ env.API_VERSION_DEVCI }} 
 
       - name: Print XX Version
         run: |
-          echo {{ env.XX_VERSION }}
+          echo ${{ env.XX_VERSION }}
 
 
             
