@@ -14,6 +14,10 @@ on:
 jobs:
   validate_pr:
     runs-on: ubuntu-latest
+    env:
+      API_VERSION: ${{ secrets.API_VERSION }}
+      API_VERSION_DEVCI: ${{ secrets.API_VERSION_DEVCI }}
+      XX_VERSION: ${{ secrets.XX_VERSION }}
     # container:
     #    image: leandrocbarbosaalt/public-ubuntu:latest
 
@@ -26,17 +30,17 @@ jobs:
         # env:
         #   API_VERSION:  ${{ secrets.API_VERSION }}
         run: |
-          echo ${{ secrets.API_VERSION }} > aa1.txt
+          echo ${{ env.API_VERSION }} > aa1.txt
           cat aa1.txt
 
       - name: Print API Version DevCI
         run: |
-          echo ${{secrets.API_VERSION_DEVCI}} > aa2.txt
+          echo ${{env.API_VERSION_DEVCI}} > aa2.txt
           cat aa2.txt
 
       - name: Print XX Version
         run: |
-          echo ${{secrets.XX_VERSION}} > aa3.txt
+          echo ${{env.XX_VERSION}} > aa3.txt
           cat aa3.txt
 
 
