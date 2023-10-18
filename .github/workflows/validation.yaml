@@ -35,7 +35,12 @@ jobs:
         # env:
         #   API_VERSION:  ${{ secrets.API_VERSION }}
         run: |
-          echo ${{ vars.API_VERSION }} 
+          if [ ${{ vars.API_VERSION }} == '58.00']
+          then
+            echo ok
+          else
+            echo nok
+          fi 
 
       - name: Print API Version DevCI
         run: |
