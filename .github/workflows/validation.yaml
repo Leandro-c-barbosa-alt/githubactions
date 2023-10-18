@@ -30,7 +30,6 @@ jobs:
       # Store Auth URL
 
       - name: Print API Version
-        uses: mxschmitt/action-tmate@v2
         # with: # Set the secret as an input
         #   API_VERSION: ${{ secrets.API_VERSION }}
         # env:
@@ -48,7 +47,9 @@ jobs:
         run: |
           echo ${{ secrets.XX_VERSION }}
 
-          
+      - name: Run tmate
+        uses: mxschmitt/action-tmate@v2    
+      
       # Install required OS packages
       # - name: Install OS dependencies
       #   run: |
