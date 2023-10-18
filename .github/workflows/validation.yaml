@@ -14,7 +14,7 @@ on:
 jobs:
   validate_pr:
     runs-on: ubuntu-latest
-    environment: CI
+    # environment: CI
     # with:
     #   API_VERSION: ${{ secrets.API_VERSION }}
     #   API_VERSION_DEVCI: ${{ secrets.API_VERSION_DEVCI }}
@@ -35,7 +35,7 @@ jobs:
         # env:
         #   API_VERSION:  ${{ secrets.API_VERSION }}
         run: |
-          if [ ${{ vars.API_VERSION }} == '58.00']
+          if [ ${{ secrets.API_VERSION }} == '58.0']
           then
             echo ok
           else
@@ -44,11 +44,11 @@ jobs:
 
       - name: Print API Version DevCI
         run: |
-          echo ${{ vars.API_VERSION_DEVCI }} 
+          echo ${{ secrets.API_VERSION_DEVCI }} 
 
       - name: Print XX Version
         run: |
-          echo ${{ vars.XX_VERSION }}
+          echo ${{ secrets.XX_VERSION }}
 
 
             
