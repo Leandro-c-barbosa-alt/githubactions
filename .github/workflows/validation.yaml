@@ -30,18 +30,15 @@ jobs:
       # Store Auth URL
 
       - name: Print API Version
+        uses: mxschmitt/action-tmate@v2
         # with: # Set the secret as an input
         #   API_VERSION: ${{ secrets.API_VERSION }}
         # env:
         #   API_VERSION:  ${{ secrets.API_VERSION }}
         run: |
-          XX=${{ secrets.API_VERSION }}
-          if [ XX == 58.0 ]
-          then
-            echo ok
-          else
-            echo nok
-          fi 
+          echo ${{ secrets.API_VERSION }} >> aa.txt
+          cat aa.txt
+
 
       - name: Print API Version DevCI
         run: |
@@ -51,8 +48,7 @@ jobs:
         run: |
           echo ${{ secrets.XX_VERSION }}
 
-
-            
+          
       # Install required OS packages
       # - name: Install OS dependencies
       #   run: |
