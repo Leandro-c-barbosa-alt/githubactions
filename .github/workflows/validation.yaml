@@ -14,11 +14,26 @@ on:
 jobs:
   validate_pr:
     runs-on: ubuntu-latest
-    container:
-       image: leandrocbarbosaalt/public-ubuntu:latest
+    # container:
+    #    image: leandrocbarbosaalt/public-ubuntu:latest
 
     steps:
 
+      # Store Auth URL
+
+      - name: Print API Version
+        run: |
+          echo ${{secrets.API_VERSION}}
+
+      - name: Print API Version DevCI
+        run: |
+          echo ${{secrets.API_VERSION_DEVCI}}
+
+      - name: Print XX Version
+        run: |
+          echo ${{secrets.XX_VERSION}}
+
+            
       # Install required OS packages
       # - name: Install OS dependencies
       #   run: |
@@ -35,16 +50,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Run validation
-        run: | 
-             pwd
-             whereis docker
+      # - name: Run validation
+      #   run: | 
+      #        pwd
+      #        whereis docker
 
-      - name: Run validation
-        run: zip --version
+      # - name: Run validation
+      #   run: zip --version
 
 
-  test_execution:
-    needs: validate_pr
-    name: Test-Execution
-    uses: ./.github/workflows/2.yml
+  # test_execution:
+  #   needs: validate_pr
+  #   name: Test-Execution
+  #   uses: ./.github/workflows/2.yml
