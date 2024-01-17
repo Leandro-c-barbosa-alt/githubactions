@@ -1,6 +1,5 @@
 name: VALIDATION
 
-
 # Workflow run name
 run-name: Workflow run Validation
 
@@ -59,8 +58,8 @@ jobs:
           echo ${{ secrets.XX_VERSION }} 
 
       - name: Checkout pre_develop branch
-          uses: actions/checkout@v2
-          with:
+        uses: actions/checkout@v2
+        with:
             ref: 'pre_develop'
   
       - name: Merge feature branch into pre_develop
@@ -112,4 +111,3 @@ jobs:
   #   needs: validate_pr
   #   name: Test-Execution
   #   uses: ./.github/workflows/2.yml
-  
