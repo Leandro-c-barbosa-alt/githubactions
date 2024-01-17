@@ -58,7 +58,7 @@ jobs:
         run: |
           echo ${{ secrets.XX_VERSION }} 
 
-          - name: Checkout pre_develop branch
+      - name: Checkout pre_develop branch
           uses: actions/checkout@v2
           with:
             ref: 'pre_develop'
