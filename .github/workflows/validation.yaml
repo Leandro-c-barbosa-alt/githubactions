@@ -57,16 +57,16 @@ jobs:
         run: |
           echo ${{ secrets.XX_VERSION }} 
 
-      - name: Set up Git identity
-        run: |
-            git config user.name "GitHub Actions"
-            git config user.email "actions@github.com"
-
       - name: Checkout pre_develop branch
         uses: actions/checkout@v2
         with:
             ref: 'pre_develop'
   
+      - name: Set up Git identity
+        run: |
+            git config user.name "GitHub Actions"
+            git config user.email "actions@github.com"
+
       - name: Merge feature branch into pre_develop
         run: |
           git fetch origin ${{ github.head_ref }}
