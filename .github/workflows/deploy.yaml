@@ -1,23 +1,40 @@
 name: DEPLOY
 
 # Workflow run name
-run-name: Workflow run Deploy
+run-name: Workflow run Deploy - {{ github.run_number }} by @${{ github.actor }}
 
 on:
   pull_request:
     types:
       - labeled
     branches:
-      - develop
+      - main
     paths-ignore:
       - "**/README.md"
 
 jobs:
   execute_with_label:
     runs-on: ubuntu-latest
+    container:
+      image: leandrocbarbosaalt/acct-sf-metadata-base:latest
     if: (((startswith(github.head_ref,'feature') || startswith(github.head_ref,'defect')) && (github.event_name == 'pull_request')) && (github.event.label.name == 'Ready for Deploy') && contains('["Leandro-c-barbosa-alt", "kiran-waghamare-acct", "paulo-pompeu-alpt", "gitdomelo"]', github.actor))
     
+    
     steps:
+
+      # Install required OS packages
+      # - name: Install OS dependencies
+      #   run: |
+      #     sudo apt-get clean -y
+      #     sudo apt-get update -y
+      #     sudo apt --only-upgrade install -y zip
+      #     sudo apt --only-upgrade install -y curl
+      #     sudo apt --only-upgrade install -y wget
+      #     sudo apt install openjdk-8-jdk -y
+      #     sudo apt --only-upgrade install jq -y
+      #     sudo apt --only-upgrade install grep -y
+      #     sudo apt autoremove -y
+
       - name: Checkout repository
         uses: actions/checkout@v2
 
