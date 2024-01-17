@@ -81,6 +81,7 @@ jobs:
           exit 1
 
       - name: Push merge to pre_develop
+        token: ${{ secrets.GH_TOKEN }}
         if: success()
         run: |
           git commit -m "Merged feature_branch into pre_develop"
