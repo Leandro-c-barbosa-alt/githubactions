@@ -57,6 +57,30 @@ jobs:
       - name: Print XX Version
         run: |
           echo ${{ secrets.XX_VERSION }} 
+
+          - name: Checkout pre_develop branch
+          uses: actions/checkout@v2
+          with:
+            ref: 'pre_develop'
+  
+      - name: Merge feature branch into pre_develop
+        run: |
+          git fetch origin ${{ github.head_ref }}
+          git merge --no-commit --no-ff origin/${{ github.head_ref }}
+        id: merge
+
+      - name: Check for merge conflicts
+        if: failure()
+        run: |
+          echo "Merge conflicts detected in feature_branch with pre_develop"
+          git diff --name-only --diff-filter=U
+          exit 1
+
+      - name: Push merge to pre_develop
+        if: success()
+        run: |
+          git commit -m "Merged feature_branch into pre_develop"
+          git push origin pre_develop
       
       # Install required OS packages
       # - name: Install OS dependencies
