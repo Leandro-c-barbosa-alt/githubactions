@@ -57,6 +57,11 @@ jobs:
         run: |
           echo ${{ secrets.XX_VERSION }} 
 
+      - name: Set up Git identity
+        run: |
+            git config user.name "GitHub Actions"
+            git config user.email "actions@github.com"
+
       - name: Checkout pre_develop branch
         uses: actions/checkout@v2
         with:
