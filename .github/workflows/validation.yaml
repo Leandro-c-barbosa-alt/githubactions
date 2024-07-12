@@ -14,6 +14,9 @@ on:
 jobs:
   validate_pr:
     runs-on: ubuntu-latest
+    concurrency: 
+      group: salesforce-pipeline
+      cancel-in-progress: false
     # environment: CI
     # with:
     #   API_VERSION: ${{ secrets.API_VERSION }}
@@ -28,6 +31,10 @@ jobs:
 
     steps:
       # Store Auth URL
+
+      # Runs a set of commands using the runners shell
+      - name: Sleep 10 seconds
+        run: sleep 10s
 
       - name: Print API Version
         # with: # Set the secret as an input
