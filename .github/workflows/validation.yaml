@@ -35,20 +35,29 @@ jobs:
       - name: Check for running validation workflows in group
         id: check-workflow
         run: |
-          GROUP=${{ env.GROUP }}
-          PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
-          echo "PR_NUMBER=${PR_NUMBER}" >> $GITHUB_ENV
-          RUNNING_VALIDATIONS=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-              https://api.github.com/repos/${{ github.repository }}/actions/runs?status=in_progress \
-              | jq -r --arg group "$GROUP" '[.workflow_runs[] | select(.name == "Validation Pipeline") | select(.head_branch == $group)] | length')
-          if [ "$RUNNING_VALIDATIONS" -gt 0 ]; then
-            echo "There is a validation workflow already running in group ${GROUP}. Exiting and re-triggering..."
-            curl -s -X POST -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-              -H "Accept: application/vnd.github.v3+json" \
-              https://api.github.com/repos/${{ github.repository }}/actions/workflows/scheduler.yml/dispatches \
-              -d '{"ref":"main", "inputs":{"pr_number": "'${PR_NUMBER}'", "group": "'${GROUP}'", "workflow": "validation"}}'
-            exit 0
-          fi
+            GROUP=${{ env.GROUP }}
+            PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+            echo "PR_NUMBER=${PR_NUMBER}" >> $GITHUB_ENV
+            
+            # Obtenha todas as execuções de workflow em progresso
+            ALL_WORKFLOWS=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+                https://api.github.com/repos/${{ github.repository }}/actions/runs?status=in_progress)
+            echo "ALL_WORKFLOWS=${ALL_WORKFLOWS}"
+            
+            # Filtre as execuções de workflow que correspondem ao nome e grupo
+            RUNNING_VALIDATIONS=$(echo $ALL_WORKFLOWS | jq -r --arg group "$GROUP" '[.workflow_runs[] | select(.name == "Validation Pipeline") | select(.head_branch == $group)] | length')
+            
+            # Imprima os valores filtrados
+            echo "RUNNING_VALIDATIONS=${RUNNING_VALIDATIONS}"
+            
+            if [ "$RUNNING_VALIDATIONS" -gt 0 ]; then
+              echo "There is a validation workflow already running in group ${GROUP}. Exiting and re-triggering..."
+              curl -s -X POST -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+                -H "Accept: application/vnd.github.v3+json" \
+                https://api.github.com/repos/${{ github.repository }}/actions/workflows/scheduler.yml/dispatches \
+                -d '{"ref":"main", "inputs":{"pr_number": "'${PR_NUMBER}'", "group": "'${GROUP}'", "workflow": "validation"}}'
+              exit 0
+            fi
 
       # Runs a set of commands using the runners shell
       - name: Sleep 60 seconds
