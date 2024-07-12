@@ -1,7 +1,7 @@
 name: Validation Pipeline
 
 # Workflow run name
-run-name: Workflow run Validation
+run-name: Validation Pipeline
 
 on:
   pull_request:
