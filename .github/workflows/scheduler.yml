@@ -15,6 +15,7 @@ on:
 jobs:
   retry:
     runs-on: ubuntu-latest
+    environment: CI
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -55,5 +56,3 @@ jobs:
         else
           echo "Workflows still in progress. Exiting..."
         fi
-
-        
