@@ -43,19 +43,17 @@ jobs:
           
           if [ "$RUNNING_WORKFLOWS" -gt 0 ]; then
             echo "There is a workflow already running. Exiting and re-triggering..."
-            echo "retry" > result.txt
-          else
-            echo "no-retry" > result.txt
+            exit 1
           fi
   
       - name: Run Salesforce Validation
-        if: steps.check-workflow.outputs.result == 'no-retry'
+        if: steps.check-workflow.outcome == 'success'
         run: |
           echo "Running Salesforce Validation"
           sleep 60s
      
       - name: Re-trigger workflow
-        if: steps.check-workflow.outputs.result == 'retry'
+        if: steps.check-workflow.outcome != 'success'
         run: |
           curl -s -X POST -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
