@@ -21,7 +21,9 @@ jobs:
     env:
       GH_TOKEN: ${{secrets.GH_TOKEN}}
     steps:
-      
+      - name: Install GitHub CLI
+        run: sudo apt-get install gh
+
       - name: Check for running workflows
         id: check-workflow
         run: |
