@@ -1,0 +1,59 @@
+name: Scheduler
+
+on:
+  schedule:
+    - cron: '*/3 * * * *' # A cada 3 minutos
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Pull request number'
+        required: true
+      group:
+        description: 'Deploy group'
+        required: true
+      workflow:
+        description: 'Workflow to retry (validation or deploy)'
+        required: true
+
+jobs:
+  retry:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install jq
+      run: sudo apt-get install -y jq
+
+    - name: Retry pending workflows for group
+      run: |
+        PR_NUMBER=${{ github.event.inputs.pr_number }}
+        GROUP=${{ github.event.inputs.group }}
+        WORKFLOW=${{ github.event.inputs.workflow }}
+        if [ "$WORKFLOW" == "validation" ]; then
+          RUNNING_WORKFLOWS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/actions/runs?status=in_progress \
+            | jq -r --arg group "$GROUP" '[.workflow_runs[] | select(.name == "Validation Pipeline") | select(.head_branch == $group)] | length')
+          if [ "$RUNNING_WORKFLOWS" -eq 0 ]; then
+            echo "Re-triggering validation workflow for PR #${PR_NUMBER} in group ${GROUP}"
+            curl -s -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              https://api.github.com/repos/${{ github.repository }}/actions/workflows/validation-main.yml/dispatches \
+              -d '{"ref":"main", "inputs":{"pr_number": "'${PR_NUMBER}'", "group": "'${GROUP}'"}}'
+          else
+            echo "Validation workflows still in progress in group ${GROUP}. Exiting..."
+          fi
+        elif [ "$WORKFLOW" == "deploy" ]; then
+          RUNNING_WORKFLOWS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/actions/runs?status=in_progress \
+            | jq -r --arg group "$GROUP" '[.workflow_runs[] | select(.name == "Deploy Pipeline") | select(.head_branch == $group)] | length')
+          if [ "$RUNNING_WORKFLOWS" -eq 0 ]; then
+            echo "Re-triggering deploy workflow for PR #${PR_NUMBER} in group ${GROUP}"
+            curl -s -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              https://api.github.com/repos/${{ github.repository }}/actions/workflows/deploy-main.yml/dispatches \
+              -d '{"ref":"main", "inputs":{"pr_number": "'${PR_NUMBER}'", "group": "'${GROUP}'"}}'
+          else
+            echo "Deploy workflows still in progress in group ${GROUP}. Exiting..."
+          fi
+        fi
