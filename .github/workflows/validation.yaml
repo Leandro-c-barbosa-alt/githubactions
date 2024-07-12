@@ -1,4 +1,4 @@
-name: VALIDATION
+name: Validation Pipeline
 
 # Workflow run name
 run-name: Workflow run Validation
