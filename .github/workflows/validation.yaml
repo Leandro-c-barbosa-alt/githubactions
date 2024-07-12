@@ -14,10 +14,12 @@ on:
 jobs:
   validate_pr:
     runs-on: ubuntu-latest
+    environment: CI
     # concurrency: 
     #   group: salesforce-pipeline
     #   cancel-in-progress: false
-  
+    env:
+      GH_TOKEN: ${{secrets.GH_TOKEN}}
     steps:
       
       - name: Check for running workflows
