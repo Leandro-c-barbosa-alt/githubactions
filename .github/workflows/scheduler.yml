@@ -31,12 +31,12 @@ jobs:
         GROUP=${{ github.event.inputs.group }}
         WORKFLOW=${{ github.event.inputs.workflow }}
         if [ "$WORKFLOW" == "validation" ]; then
-          RUNNING_WORKFLOWS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          RUNNING_WORKFLOWS=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
             https://api.github.com/repos/${{ github.repository }}/actions/runs?status=in_progress \
             | jq -r --arg group "$GROUP" '[.workflow_runs[] | select(.name == "Validation Pipeline") | select(.head_branch == $group)] | length')
           if [ "$RUNNING_WORKFLOWS" -eq 0 ]; then
             echo "Re-triggering validation workflow for PR #${PR_NUMBER} in group ${GROUP}"
-            curl -s -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            curl -s -X POST -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
               -H "Accept: application/vnd.github.v3+json" \
               https://api.github.com/repos/${{ github.repository }}/actions/workflows/validation-main.yml/dispatches \
               -d '{"ref":"main", "inputs":{"pr_number": "'${PR_NUMBER}'", "group": "'${GROUP}'"}}'
@@ -44,12 +44,12 @@ jobs:
             echo "Validation workflows still in progress in group ${GROUP}. Exiting..."
           fi
         elif [ "$WORKFLOW" == "deploy" ]; then
-          RUNNING_WORKFLOWS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          RUNNING_WORKFLOWS=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
             https://api.github.com/repos/${{ github.repository }}/actions/runs?status=in_progress \
             | jq -r --arg group "$GROUP" '[.workflow_runs[] | select(.name == "Deploy Pipeline") | select(.head_branch == $group)] | length')
           if [ "$RUNNING_WORKFLOWS" -eq 0 ]; then
             echo "Re-triggering deploy workflow for PR #${PR_NUMBER} in group ${GROUP}"
-            curl -s -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            curl -s -X POST -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
               -H "Accept: application/vnd.github.v3+json" \
               https://api.github.com/repos/${{ github.repository }}/actions/workflows/deploy-main.yml/dispatches \
               -d '{"ref":"main", "inputs":{"pr_number": "'${PR_NUMBER}'", "group": "'${GROUP}'"}}'
