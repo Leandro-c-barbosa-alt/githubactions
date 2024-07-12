@@ -2,7 +2,7 @@ name: Scheduler
 
 on:
   schedule:
-    - cron: '*/3 * * * *' # A cada 3 minutos
+    - cron: '*/3 * * * *' # A cada 10 minutos
   workflow_dispatch:
     inputs:
       pr_number:
