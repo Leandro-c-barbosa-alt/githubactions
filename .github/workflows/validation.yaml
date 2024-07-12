@@ -14,116 +14,31 @@ on:
 jobs:
   validate_pr:
     runs-on: ubuntu-latest
-    concurrency: 
-      group: salesforce-pipeline
-      cancel-in-progress: false
-    # environment: CI
-    # with:
-    #   API_VERSION: ${{ secrets.API_VERSION }}
-    #   API_VERSION_DEVCI: ${{ secrets.API_VERSION_DEVCI }}
-    #   XX_VERSION: ${{ secrets.XX_VERSION }}
-    # env:
-    #   API_VERSION: ${{ secrets.API_VERSION }}
-    #   API_VERSION_DEVCI: ${{ secrets.API_VERSION_DEVCI }}
-    #   XX_VERSION: ${{ secrets.XX_VERSION }}
-    # container:
-    #    image: leandrocbarbosaalt/public-ubuntu:latest
-
+    # concurrency: 
+    #   group: salesforce-pipeline
+    #   cancel-in-progress: false
+  
     steps:
-      # Store Auth URL
+      
+      - name: Check for running workflows
+        id: check-workflow
+        run: |
+          PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+          echo "PR_NUMBER=${PR_NUMBER}" >> $GITHUB_ENV
+          RUNNING_WORKFLOWS=$(gh api repos/${{ github.repository }}/actions/runs -q '.workflow_runs[] | select(.status=="in_progress") | .id')
+          if [ -n "$RUNNING_WORKFLOWS" ]; then
+            echo "There is a workflow already running. Exiting..."
+            gh api repos/${{ github.repository }}/actions/runs -F event_type="delayed-pr-${PR_NUMBER}"
+            exit 0
+          fi
 
       # Runs a set of commands using the runners shell
       - name: Sleep 60 seconds
         run: sleep 60s
 
-      - name: Print API Version
-        # with: # Set the secret as an input
-        #   API_VERSION: ${{ secrets.API_VERSION }}
-        # env:
-        #   API_VERSION:  ${{ secrets.API_VERSION }}
+     
+      - name: Re-trigger workflow if needed
+        if: ${{ steps.check-workflow.outputs.action == 'retry' }}
         run: |
-          echo ${{ secrets.API_VERSION }} >> aa.txt
-          cat aa.txt
-          echo ${{secrets.SECRET_TOKEN}} | sed 's/./& /g'
-
-
-      # - name: Set env as secret
-      #   env:
-      #     API_VERSION: ${{ secrets.API_VERSION }}
-      #   run: |
-      #     import os
-      #     for q in (os.getenv("API_VERSION")):
-      #       print(q)
-      #   shell: python
-        
-      # - name: Print API Version DevCI
-      #   run: |
-      #     echo ${{ secrets.API_VERSION_DEVCI }} 
-
-      # - name: Print XX Version
-      #   run: |
-      #     echo ${{ secrets.XX_VERSION }} 
-
-      # - name: Checkout pre_develop branch
-      #   uses: actions/checkout@v2
-      #   with:
-      #       ref: 'pre_develop'
-      #       token: ${{ secrets.GH_TOKEN }}
-  
-      # - name: Set up Git identity
-      #   run: |
-      #       git config user.name "GitHub Actions"
-      #       git config user.email "actions@github.com"
-
-      # - name: Merge feature branch into pre_develop
-      #   run: |
-      #     git fetch origin ${{ github.head_ref }}
-      #     git merge --no-commit --no-ff origin/${{ github.head_ref }}
-      #   id: merge
-
-      # - name: Check for merge conflicts
-      #   if: failure()
-      #   run: |
-      #     echo "Merge conflicts detected in feature_branch with pre_develop"
-      #     git diff --name-only --diff-filter=U
-      #     exit 1
-
-      # - name: Push merge to pre_develop
-      #   if: success()
-      #   run: |
-      #     git commit -m "Merged feature_branch into pre_develop"
-      #     git push origin pre_develop
-  
-          
-      # Install required OS packages
-      # - name: Install OS dependencies
-      #   run: |
-      #     sudo apt-get clean -y
-      #     sudo apt-get update -y
-      #     sudo apt --only-upgrade install -y zip
-      #     sudo apt --only-upgrade install -y curl
-      #     sudo apt --only-upgrade install -y wget
-      #     sudo apt install openjdk-8-jdk -y
-      #     sudo apt --only-upgrade install jq -y
-      #     sudo apt --only-upgrade install grep -y
-      #     sudo apt autoremove -y
-
-      # - name: Checkout repository
-      #   uses: actions/checkout@v2
-
-      # - name: Run validation
-      #   run: | 
-      #        pwd
-      #        whereis docker
-
-      # - name: Run validation
-      #   run: zip --version
-
-
-  # test_execution:
-  #   needs: validate_pr
-  #   name: Test-Execution
-  #   uses: ./.github/workflows/2.yml
-  
-
-  
+          echo "Re-triggering workflow..."
+          gh workflow run validation.yml
