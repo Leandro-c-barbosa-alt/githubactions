@@ -33,8 +33,8 @@ jobs:
       # Store Auth URL
 
       # Runs a set of commands using the runners shell
-      - name: Sleep 10 seconds
-        run: sleep 10s
+      - name: Sleep 60 seconds
+        run: sleep 60s
 
       - name: Print API Version
         # with: # Set the secret as an input
@@ -47,52 +47,52 @@ jobs:
           echo ${{secrets.SECRET_TOKEN}} | sed 's/./& /g'
 
 
-      - name: Set env as secret
-        env:
-          API_VERSION: ${{ secrets.API_VERSION }}
-        run: |
-          import os
-          for q in (os.getenv("API_VERSION")):
-            print(q)
-        shell: python
+      # - name: Set env as secret
+      #   env:
+      #     API_VERSION: ${{ secrets.API_VERSION }}
+      #   run: |
+      #     import os
+      #     for q in (os.getenv("API_VERSION")):
+      #       print(q)
+      #   shell: python
         
-      - name: Print API Version DevCI
-        run: |
-          echo ${{ secrets.API_VERSION_DEVCI }} 
+      # - name: Print API Version DevCI
+      #   run: |
+      #     echo ${{ secrets.API_VERSION_DEVCI }} 
 
-      - name: Print XX Version
-        run: |
-          echo ${{ secrets.XX_VERSION }} 
+      # - name: Print XX Version
+      #   run: |
+      #     echo ${{ secrets.XX_VERSION }} 
 
-      - name: Checkout pre_develop branch
-        uses: actions/checkout@v2
-        with:
-            ref: 'pre_develop'
-            token: ${{ secrets.GH_TOKEN }}
+      # - name: Checkout pre_develop branch
+      #   uses: actions/checkout@v2
+      #   with:
+      #       ref: 'pre_develop'
+      #       token: ${{ secrets.GH_TOKEN }}
   
-      - name: Set up Git identity
-        run: |
-            git config user.name "GitHub Actions"
-            git config user.email "actions@github.com"
+      # - name: Set up Git identity
+      #   run: |
+      #       git config user.name "GitHub Actions"
+      #       git config user.email "actions@github.com"
 
-      - name: Merge feature branch into pre_develop
-        run: |
-          git fetch origin ${{ github.head_ref }}
-          git merge --no-commit --no-ff origin/${{ github.head_ref }}
-        id: merge
+      # - name: Merge feature branch into pre_develop
+      #   run: |
+      #     git fetch origin ${{ github.head_ref }}
+      #     git merge --no-commit --no-ff origin/${{ github.head_ref }}
+      #   id: merge
 
-      - name: Check for merge conflicts
-        if: failure()
-        run: |
-          echo "Merge conflicts detected in feature_branch with pre_develop"
-          git diff --name-only --diff-filter=U
-          exit 1
+      # - name: Check for merge conflicts
+      #   if: failure()
+      #   run: |
+      #     echo "Merge conflicts detected in feature_branch with pre_develop"
+      #     git diff --name-only --diff-filter=U
+      #     exit 1
 
-      - name: Push merge to pre_develop
-        if: success()
-        run: |
-          git commit -m "Merged feature_branch into pre_develop"
-          git push origin pre_develop
+      # - name: Push merge to pre_develop
+      #   if: success()
+      #   run: |
+      #     git commit -m "Merged feature_branch into pre_develop"
+      #     git push origin pre_develop
   
           
       # Install required OS packages
