@@ -37,8 +37,6 @@
               PR_NUMBER=$(_jq '.title' | awk '{print $3}')
               ISSUE_NUMBER=$(_jq '.number')
   
-              print(f"Redeploy: {PR_NUMBER}")
-  
               # Obtenha todas as execuções de workflow em progresso
               ALL_WORKFLOWS=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
                   https://api.github.com/repos/${{ github.repository }}/actions/runs?status=in_progress)
