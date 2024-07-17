@@ -2,7 +2,7 @@ name: Scheduler
 
 on:
   schedule:
-    - cron: '*/1 * * * *' # A cada 10 minutos
+    - cron: '*/10 * * * *' # A cada 10 minutos
 
 jobs:
   retry:
