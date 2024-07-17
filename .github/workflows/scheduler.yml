@@ -34,16 +34,13 @@
                 echo ${row} | base64 --decode | jq -r ${1}
               }
     
-              PR_NUMBER=$(_jq '.title' | awk '{print $3}')
+              PR_NUMBER=$(_jq '.title' | awk '{print $4}' | tr -d '#')
               ISSUE_NUMBER=$(_jq '.number')
 
               echo "PR_NUMBER=${PR_NUMBER}"
 
               TEST=$(_jq '.title')
               echo "TEST=${TEST}"
-  
-              FULL=$(_jq)
-              echo "FULL=${FULL}"
 
               # Obtenha todas as execuções de workflow em progresso
               ALL_WORKFLOWS=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
