@@ -17,7 +17,7 @@ jobs:
     environment: CI
     concurrency: 
       group: salesforce-pipeline
-      cancel-in-progress: true
+      cancel-in-progress: false
     env:
       GH_TOKEN: ${{secrets.GH_TOKEN}}
     steps:
