@@ -37,13 +37,13 @@
               PR_NUMBER=$(_jq '.title' | awk '{print $3}')
               ISSUE_NUMBER=$(_jq '.number')
 
-              echo "PR_NUMBER={PR_NUMBER}"
+              echo "PR_NUMBER=${PR_NUMBER}"
 
               TEST=$(_jq '.title')
-              echo "TEST={TEST}"
+              echo "TEST=${TEST}"
   
               FULL=$(_jq)
-              echo "FULL={FULL}"
+              echo "FULL=${FULL}"
 
               # Obtenha todas as execuções de workflow em progresso
               ALL_WORKFLOWS=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
