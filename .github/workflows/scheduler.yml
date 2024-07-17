@@ -23,86 +23,44 @@ jobs:
       run: |
         PENDING_VALIDATIONS=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
           https://api.github.com/repos/${{ github.repository }}/issues?labels=pending-validation&state=open)
-        echo "PENDING_VALIDATIONS=${PENDING_VALIDATIONS}" >> $GITHUB_ENV
-
-        PENDING_DEPLOYS=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-          https://api.github.com/repos/${{ github.repository }}/issues?labels=pending-deploy&state=open)
-        echo "PENDING_DEPLOYS=${PENDING_DEPLOYS}" >> $GITHUB_ENV
+        echo "${PENDING_VALIDATIONS}" | jq '.' > pending_validations.json
 
     - name: Retry pending validation workflows
       run: |
-        for row in $(echo "${{ env.PENDING_VALIDATIONS }}" | jq -r '.[] | @base64'); do
-          _jq() {
-            echo ${row} | base64 --decode | jq -r ${1}
-          }
-
-          PR_NUMBER=$(_jq '.title' | awk '{print $3}')
-          ISSUE_NUMBER=$(_jq '.number')
-
-          # Obtenha todas as execuções de workflow em progresso
-          ALL_WORKFLOWS=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-              https://api.github.com/repos/${{ github.repository }}/actions/runs?status=in_progress)
-          echo "ALL_WORKFLOWS=${ALL_WORKFLOWS}"
-
-          # Filtre as execuções de workflow que correspondem ao nome
-          RUNNING_WORKFLOWS=$(echo $ALL_WORKFLOWS | jq -r '[.workflow_runs[] | select(.name == "Validation Pipeline" or .name == "Deploy Pipeline")] | length')
-
-          # Imprima o número de execuções em andamento
-          echo "RUNNING_WORKFLOWS=${RUNNING_WORKFLOWS}"
-
-          if [ "$RUNNING_WORKFLOWS" -eq 0 ]; then
-            echo "Re-triggering validation workflow for PR #${PR_NUMBER}"
-            curl -s -X POST -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-              -H "Accept: application/vnd.github.v3+json" \
-              https://api.github.com/repos/${{ github.repository }}/actions/workflows/validation-main.yml/dispatches \
-              -d '{"ref":"main", "inputs":{"pr_number": "'${PR_NUMBER}'"}}'
-
-            # Fechar a issue
-            curl -s -X PATCH -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-              -H "Accept: application/vnd.github.v3+json" \
-              https://api.github.com/repos/${{ github.repository }}/issues/${ISSUE_NUMBER} \
-              -d '{"state": "closed"}'
-          else
-            echo "Workflows still in progress. Exiting..."
-          fi
-        done
-
-    - name: Retry pending deploy workflows
-      run: |
-        for row in $(echo "${{ env.PENDING_DEPLOYS }}" | jq -r '.[] | @base64'); do
-          _jq() {
-            echo ${row} | base64 --decode | jq -r ${1}
-          }
-
-          PR_NUMBER=$(_jq '.title' | awk '{print $3}')
-          ISSUE_NUMBER=$(_jq '.number')
-
-          # Obtenha todas as execuções de workflow em progresso
-          ALL_WORKFLOWS=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-              https://api.github.com/repos/${{ github.repository }}/actions/runs?status=in_progress)
-          echo "ALL_WORKFLOWS=${ALL_WORKFLOWS}"
-
-          # Filtre as execuções de workflow que correspondem ao nome
-          RUNNING_WORKFLOWS=$(echo $ALL_WORKFLOWS | jq -r '[.workflow_runs[] | select(.name == "Validation Pipeline" or .name == "Deploy Pipeline")] | length')
-
-          # Imprima o número de execuções em andamento
-          echo "RUNNING_WORKFLOWS=${RUNNING_WORKFLOWS}"
-
-          if [ "$RUNNING_WORKFLOWS" -eq 0 ]; then
-            echo "Re-triggering deploy workflow for PR #${PR_NUMBER}"
-            curl -s -X POST -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-              -H "Accept: application/vnd.github.v3+json" \
-              https://api.github.com/repos/${{ github.repository }}/actions/workflows/deploy-main.yml/dispatches \
-              -d '{"ref":"main", "inputs":{"pr_number": "'${PR_NUMBER}'"}}'
-
-            # Fechar a issue
-            curl -s -X PATCH -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-              -H "Accept: application/vnd.github.v3+json" \
-              https://api.github.com/repos/${{ github.repository }}/issues/${ISSUE_NUMBER} \
-              -d '{"state": "closed"}'
-          else
-            echo "Workflows still in progress. Exiting..."
-          fi
-        done
+          for row in $(cat pending_validations.json | jq -r '.[] | @base64'); do
+            _jq() {
+              echo ${row} | base64 --decode | jq -r ${1}
+            }
+  
+            PR_NUMBER=$(_jq '.title' | awk '{print $3}')
+            ISSUE_NUMBER=$(_jq '.number')
+  
+            # Obtenha todas as execuções de workflow em progresso
+            ALL_WORKFLOWS=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+                https://api.github.com/repos/${{ github.repository }}/actions/runs?status=in_progress)
+            echo "ALL_WORKFLOWS=${ALL_WORKFLOWS}"
+  
+            # Filtre as execuções de workflow que correspondem ao nome
+            RUNNING_WORKFLOWS=$(echo $ALL_WORKFLOWS | jq -r '[.workflow_runs[] | select(.name == "Validation Pipeline" or .name == "Deploy Pipeline")] | length')
+  
+            # Imprima o número de execuções em andamento
+            echo "RUNNING_WORKFLOWS=${RUNNING_WORKFLOWS}"
+  
+            if [ "$RUNNING_WORKFLOWS" -eq 0 ]; then
+              echo "Re-triggering validation workflow for PR #${PR_NUMBER}"
+              curl -s -X POST -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+                -H "Accept: application/vnd.github.v3+json" \
+                https://api.github.com/repos/${{ github.repository }}/actions/workflows/validation-main.yml/dispatches \
+                -d '{"ref":"main", "inputs":{"pr_number": "'${PR_NUMBER}'"}}'
+  
+              # Fechar a issue
+              curl -s -X PATCH -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+                -H "Accept: application/vnd.github.v3+json" \
+                https://api.github.com/repos/${{ github.repository }}/issues/${ISSUE_NUMBER} \
+                -d '{"state": "closed"}'
+            else
+              echo "Workflows still in progress. Exiting..."
+            fi
+          done
 
         
