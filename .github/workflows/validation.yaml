@@ -15,9 +15,9 @@ jobs:
   validate_pr:
     runs-on: ubuntu-latest
     environment: CI
-    # concurrency: 
-    #   group: salesforce-pipeline
-    #   cancel-in-progress: false
+    concurrency: 
+      group: salesforce-pipeline
+      cancel-in-progress: true
     env:
       GH_TOKEN: ${{secrets.GH_TOKEN}}
     steps:

@@ -2,12 +2,15 @@ name: Scheduler
 
 on:
   schedule:
-    - cron: '*/3 * * * *' # A cada 10 minutos
+    - cron: '*/10 * * * *' # A cada 10 minutos
 
 jobs:
   retry:
     runs-on: ubuntu-latest
     environment: CI
+    env:
+      GH_TOKEN: ${{secrets.GH_TOKEN}}
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -101,3 +104,5 @@ jobs:
             echo "Workflows still in progress. Exiting..."
           fi
         done
+
+        
