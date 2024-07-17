@@ -2,15 +2,11 @@ name: Scheduler
 
 on:
   schedule:
-    - cron: '*/10 * * * *' # A cada 10 minutos
+    - cron: '*/2 * * * *' # A cada 10 minutos
 
 jobs:
   retry:
     runs-on: ubuntu-latest
-    environment: CI
-    env:
-      GH_TOKEN: ${{secrets.GH_TOKEN}}
-    
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -18,49 +14,67 @@ jobs:
     - name: Install jq
       run: sudo apt-get install -y jq
 
-    - name: Get pending issues
-      id: get-pending-issues
+    - name: Get queue issue
+      id: get-queue-issue
       run: |
-        PENDING_VALIDATIONS=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-          https://api.github.com/repos/${{ github.repository }}/issues?labels=pending-validation&state=open)
-        echo "${PENDING_VALIDATIONS}" | jq '.' > pending_validations.json
+        QUEUE_ISSUE=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+          https://api.github.com/repos/${{ github.repository }}/issues?labels=workflow-queue&state=open | jq -r '.[0].number')
+        if [ "$QUEUE_ISSUE" = "null" ]; then
+          echo "No queue issue found. Exiting."
+          exit 0
+        fi
+        echo "QUEUE_ISSUE=${QUEUE_ISSUE}" >> $GITHUB_ENV
 
-    - name: Retry pending validation workflows
+    - name: Get queue body
+      id: get-queue-body
       run: |
-          for row in $(cat pending_validations.json | jq -r '.[] | @base64'); do
-            _jq() {
-              echo ${row} | base64 --decode | jq -r ${1}
-            }
-  
-            PR_NUMBER=$(_jq '.title' | awk '{print $3}')
-            ISSUE_NUMBER=$(_jq '.number')
-  
-            # Obtenha todas as execuções de workflow em progresso
-            ALL_WORKFLOWS=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-                https://api.github.com/repos/${{ github.repository }}/actions/runs?status=in_progress)
-            echo "ALL_WORKFLOWS=${ALL_WORKFLOWS}"
-  
-            # Filtre as execuções de workflow que correspondem ao nome
-            RUNNING_WORKFLOWS=$(echo $ALL_WORKFLOWS | jq -r '[.workflow_runs[] | select(.name == "Validation Pipeline" or .name == "Deploy Pipeline")] | length')
-  
-            # Imprima o número de execuções em andamento
-            echo "RUNNING_WORKFLOWS=${RUNNING_WORKFLOWS}"
-  
-            if [ "$RUNNING_WORKFLOWS" -eq 0 ]; then
-              echo "Re-triggering validation workflow for PR #${PR_NUMBER}"
-              curl -s -X POST -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-                -H "Accept: application/vnd.github.v3+json" \
-                https://api.github.com/repos/${{ github.repository }}/actions/workflows/validation-main.yml/dispatches \
-                -d '{"ref":"main", "inputs":{"pr_number": "'${PR_NUMBER}'"}}'
-  
-              # Fechar a issue
-              curl -s -X PATCH -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-                -H "Accept: application/vnd.github.v3+json" \
-                https://api.github.com/repos/${{ github.repository }}/issues/${ISSUE_NUMBER} \
-                -d '{"state": "closed"}'
-            else
-              echo "Workflows still in progress. Exiting..."
-            fi
-          done
+        QUEUE_BODY=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+          https://api.github.com/repos/${{ github.repository }}/issues/${QUEUE_ISSUE} | jq -r '.body')
+        echo "QUEUE_BODY=${QUEUE_BODY}" >> $GITHUB_ENV
 
+    - name: Process first item in queue
+      run: |
+        QUEUE_ITEM=$(echo "${{ env.QUEUE_BODY }}" | grep -Eo '^- PR #[0-9]+ \(Validation\|Deploy\)' | head -n 1)
+        if [ -z "$QUEUE_ITEM" ]; then
+          echo "No items in queue. Exiting."
+          exit 0
+        fi
         
+        PR_NUMBER=$(echo $QUEUE_ITEM | awk '{print $3}' | tr -d '#')
+        WORKFLOW_TYPE=$(echo $QUEUE_ITEM | awk '{print $4}' | tr -d '()')
+
+        # Obtenha todas as execuções de workflow em progresso
+        ALL_WORKFLOWS=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/actions/runs?status=in_progress)
+        echo "ALL_WORKFLOWS=${ALL_WORKFLOWS}"
+
+        # Filtre as execuções de workflow que correspondem ao nome
+        RUNNING_WORKFLOWS=$(echo $ALL_WORKFLOWS | jq -r '[.workflow_runs[] | select(.name == "Validation Pipeline" or .name == "Deploy Pipeline")] | length')
+
+        # Imprima o número de execuções em andamento
+        echo "RUNNING_WORKFLOWS=${RUNNING_WORKFLOWS}"
+
+        if [ "$RUNNING_WORKFLOWS" -eq 0 ]; then
+          if [ "$WORKFLOW_TYPE" == "Validation" ]; then
+            echo "Re-triggering validation workflow for PR #${PR_NUMBER}"
+            curl -s -X POST -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              https://api.github.com/repos/${{ github.repository }}/actions/workflows/validation.yml/dispatches \
+              -d '{"ref":"main", "inputs":{"pr_number": "'${PR_NUMBER}'"}}'
+          elif [ "$WORKFLOW_TYPE" == "Deploy" ]; then
+            echo "Re-triggering deploy workflow for PR #${PR_NUMBER}"
+            curl -s -X POST -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              https://api.github.com/repos/${{ github.repository }}/actions/workflows/deploy-main.yml/dispatches \
+              -d '{"ref":"main", "inputs":{"pr_number": "'${PR_NUMBER}'"}}'
+          fi
+
+          # Remover PR da fila
+          NEW_QUEUE_BODY=$(echo "${{ env.QUEUE_BODY }}" | sed "/^$QUEUE_ITEM$/d")
+          curl -s -X PATCH -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/issues/${{ env.QUEUE_ISSUE }} \
+            -d "{\"body\": \"${NEW_QUEUE_BODY}\"}"
+        else
+          echo "Workflows still in progress. Exiting."
+        fi
