@@ -4,6 +4,7 @@ name: Validation Pipeline
 run-name: Validation Pipeline
 
 on:
+  workflow_dispatch:
   pull_request:
     types: [opened, synchronize]
     branches:
