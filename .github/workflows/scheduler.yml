@@ -57,7 +57,7 @@
                 echo "Re-triggering validation workflow for PR #${PR_NUMBER}"
                 curl -s -X POST -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
                   -H "Accept: application/vnd.github.v3+json" \
-                  https://api.github.com/repos/${{ github.repository }}/actions/workflows/validation.yml/dispatches \
+                  https://api.github.com/repos/${{ github.repository }}/actions/workflows/validation.yaml/dispatches \
                   -d '{"ref":"main", "inputs":{"pr_number": "'${PR_NUMBER}'"}}'
     
                 # Fechar a issue
