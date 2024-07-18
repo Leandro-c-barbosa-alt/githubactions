@@ -5,6 +5,10 @@ run-name: Validation Pipeline
 
 on:
   workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Pull request number'
+        required: true
   pull_request:
     types: [opened, synchronize]
     branches:
@@ -29,8 +33,13 @@ jobs:
         id: check-workflow
         continue-on-error: true
         run: |
-          PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+          if [ -z "$GITHUB_REF" ]; then
+            PR_NUMBER=${{ github.event.inputs.pr_number }}
+          else
+            PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+          fi
           echo "PR_NUMBER=${PR_NUMBER}" >> $GITHUB_ENV
+
           
           # Obtenha todas as execuções de workflow em progresso
           ALL_WORKFLOWS=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
