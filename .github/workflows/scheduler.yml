@@ -48,8 +48,9 @@
               echo "ALL_WORKFLOWS=${ALL_WORKFLOWS}"
     
               # Filtre as execuções de workflow que correspondem ao nome
-              RUNNING_WORKFLOWS=$(echo $ALL_WORKFLOWS | jq -r '[.workflow_runs[] | select(.name | contains("Validation Pipeline") or .name | contains("Deploy Pipeline"))] | length')
-          
+              RUNNING_WORKFLOWS=$(echo $ALL_WORKFLOWS | jq -r '[.workflow_runs[] | select(.name | contains("Validation Pipeline") or contains("Deploy Pipeline"))] | length')
+
+
               # Imprima o número de execuções em andamento
               echo "RUNNING_WORKFLOWS=${RUNNING_WORKFLOWS}"
     
