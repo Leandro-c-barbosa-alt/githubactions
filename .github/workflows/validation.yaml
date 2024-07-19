@@ -3,7 +3,6 @@ name: Validation Pipeline
 # Workflow run name
 run-name: Workflow run PR No - ${{ github.event.pull_request.number }} and PR title - ${{ github.event.pull_request.title }} by @${{ github.actor }}
 
-
 on:
   workflow_dispatch:
     inputs:
