@@ -5,10 +5,6 @@ run-name: Workflow run PR No - ${{ github.event.pull_request.number }} and PR ti
 
 on:
   workflow_dispatch:
-    inputs:
-      pr_number:
-        description: 'Pull request number'
-        required: true
   pull_request:
     types: [opened, synchronize]
     branches:
@@ -19,17 +15,12 @@ on:
 jobs:
   validate_pr:
     runs-on: ubuntu-latest
-    environment: CI
     env:
       JOB_ENV_VAR: "job JOB_ENV_VAR"
       JOB_ENV_VAR2: "job JOB_ENV_VAR"
-      PR_NUMBER: ${{ github.event.inputs.pr_number }}
-      
+    
     steps:
-      - name: Install jq
-        run: sudo apt-get install -y jq
-
-      - name: Check for running workflows
+      - name: test vars
         env:
           JOB_ENV_VAR: "task JOB_ENV_VAR"
         id: check-workflow
@@ -42,36 +33,7 @@ jobs:
           echo "job JOB_ENV_VAR2=$env.JOB_ENV_VAR2"
           echo "task JOB_ENV_VAR2=$JOB_ENV_VAR2"
 
+          echo "JOB_ENV_VAR job level: $(printenv JOB_ENV_VAR)"
 
-          # Obtenha todas as execuções de workflow em progresso
-          ALL_WORKFLOWS=$(curl -s -H "Authorization: token $env.GH_TOKEN" \
-              https://api.github.com/repos/${{ github.repository }}/actions/runs?status=in_progress)
-          echo "ALL_WORKFLOWS=${ALL_WORKFLOWS}"
-          
-          # Filtre as execuções de workflow que correspondem ao nome
-          RUNNING_WORKFLOWS=$(echo $ALL_WORKFLOWS | jq -r '[.workflow_runs[] | select(.name | contains("Validation Pipeline") or .name | contains("Deploy Pipeline"))] | length')
-          
-          # Imprima os valores filtrados
-          echo "RUNNING_WORKFLOWS=${RUNNING_WORKFLOWS}"
-          
-          if [ "$RUNNING_WORKFLOWS" -gt 0 ]; then
-            echo "There is a workflow already running. Exiting and re-triggering..."
-            exit 1
-          fi
-  
-      - name: Run Salesforce Validation
-        if: steps.check-workflow.outcome == 'success'
-        run: |
-          echo "Running Salesforce Validation"
-          sleep 60s
+
      
-      - name: Re-trigger workflow
-        if: steps.check-workflow.outcome != 'success'
-        run: |
-           curl -s -X POST -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-              -H "Accept: application/vnd.github.v3+json" \
-              https://api.github.com/repos/${{ github.repository }}/issues \
-              -d '{"title": "Pending Validation PR #'"${PR_NUMBER}"'", "body": "Re-trigger validation for PR #'"${PR_NUMBER}"'", "labels": ["pending-validation"]}'
-            exit 0
-            
-            
