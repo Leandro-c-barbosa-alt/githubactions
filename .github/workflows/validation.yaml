@@ -27,6 +27,8 @@ jobs:
         continue-on-error: true
         run: |
          
+          env
+
           echo "job JOB_ENV_VAR=$env.JOB_ENV_VAR"
           echo "task JOB_ENV_VAR=$JOB_ENV_VAR"
 
