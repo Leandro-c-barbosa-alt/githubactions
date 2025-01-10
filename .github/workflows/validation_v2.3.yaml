@@ -18,7 +18,7 @@ jobs:
    
     steps:
       - name: test
-        if: contains(github.ref, env.FUTURE_RELEASE)
+        if: contains(github.ref, vars.FUTURE_RELEASE)
         continue-on-error: true
         run: |
          
