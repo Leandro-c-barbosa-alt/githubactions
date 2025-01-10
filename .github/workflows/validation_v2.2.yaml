@@ -9,6 +9,7 @@ on:
     types: [opened, synchronize]
     branches:
       - "releases/${{ vars.CURRENT_RELEASE }}*"
+      - releases/v*
     paths-ignore:
       - "**/README.md"
 
