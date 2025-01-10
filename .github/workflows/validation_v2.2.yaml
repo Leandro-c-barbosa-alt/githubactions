@@ -18,7 +18,7 @@ jobs:
    
     steps:
       - name: test
-        if: contains(github.ref, vars.CURRENT_RELEASE)
+        if: contains(github.base_ref, vars.CURRENT_RELEASE)
         continue-on-error: true
         run: |
          
