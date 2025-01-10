@@ -1,0 +1,75 @@
+### old ---
+
+  name: Scheduler
+
+  on:
+    schedule:
+      - cron: '*/1 * * * *' # A cada 10 minutos
+  
+  jobs:
+    retry:
+      runs-on: ubuntu-latest
+      environment: CI
+      env:
+        GH_TOKEN: ${{secrets.GH_TOKEN}}
+      
+      steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+  
+      - name: Install jq
+        run: sudo apt-get install -y jq
+  
+      - name: Get pending issues
+        id: get-pending-issues
+        run: |
+          PENDING_VALIDATIONS=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/issues?labels=pending-validation&state=open)
+          echo "${PENDING_VALIDATIONS}" | jq '.' > pending_validations.json
+  
+      - name: Retry pending validation workflows
+        run: |
+            for row in $(cat pending_validations.json | jq -r '.[] | @base64'); do
+              _jq() {
+                echo ${row} | base64 --decode | jq -r ${1}
+              }
+    
+              PR_NUMBER=$(_jq '.title' | awk '{print $4}' | tr -d '#')
+              ISSUE_NUMBER=$(_jq '.number')
+
+              echo "PR_NUMBER=${PR_NUMBER}"
+
+              TEST=$(_jq '.title')
+              echo "TEST=${TEST}"
+
+              # Obtenha todas as execuções de workflow em progresso
+              ALL_WORKFLOWS=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+                  https://api.github.com/repos/${{ github.repository }}/actions/runs?status=in_progress)
+              echo "ALL_WORKFLOWS=${ALL_WORKFLOWS}"
+    
+              # Filtre as execuções de workflow que correspondem ao nome
+              RUNNING_WORKFLOWS=$(echo $ALL_WORKFLOWS | jq -r '[.workflow_runs[] | select(.name == "Validation Pipeline" or .name == "Deploy Pipeline")] | length')
+    
+              # Imprima o número de execuções em andamento
+              echo "RUNNING_WORKFLOWS=${RUNNING_WORKFLOWS}"
+    
+              if [ "$RUNNING_WORKFLOWS" -eq 0 ]; then
+                echo "Re-triggering validation workflow for PR #${PR_NUMBER}"
+                curl -s -X POST -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+                  -H "Accept: application/vnd.github.v3+json" \
+                  https://api.github.com/repos/${{ github.repository }}/actions/workflows/validation.yaml/dispatches \
+                  -d '{"ref":"main", "inputs":{"pr_number": "'${PR_NUMBER}'"}}'
+    
+                # Fechar a issue
+                curl -s -X PATCH -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+                  -H "Accept: application/vnd.github.v3+json" \
+                  https://api.github.com/repos/${{ github.repository }}/issues/${ISSUE_NUMBER} \
+                  -d '{"state": "closed"}'
+
+                  # run only to first PR
+                  exit 0
+              else
+                echo "Workflows still in progress. Exiting..."
+              fi
+            done
+  

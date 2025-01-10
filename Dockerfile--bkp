@@ -1,0 +1,56 @@
+# ---- Estágio Base ----
+FROM ubuntu:22.04 as base
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Realiza as atualizações e instalações requeridas
+RUN apt-get update -y && \
+    apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev wget libbz2-dev -y && \
+    apt install -y zip && \
+    apt install -y curl && \
+    apt install openjdk-8-jdk -y && \
+    apt install -y grep && \
+    apt install -y lsb-release && \
+    apt install -y jq && \
+    apt install -y software-properties-common && \
+    add-apt-repository ppa:deadsnakes/ppa && \
+    apt install -y python3.7 && \
+    apt install -y python3-pip && \
+    python3 -m pip install --upgrade pip && \
+    apt install -y coreutils && \
+    apt install -y python-is-python3 && \
+    apt install -y git && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean -y && \
+    apt autoremove -y 
+
+# ---- Estágio Final ----
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV GITHUB_PATH="$HOME/sfdx/bin"
+ENV PATH="/root/sfdx/bin/:${PATH}"
+
+COPY --from=base / /
+
+# Realiza as atualizações e instalações requeridas
+RUN apt install -y curl && \
+    apt install openjdk-8-jdk -y && \
+    apt install -y grep && \
+    apt install -y git && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean -y && \
+    apt autoremove -y
+
+# Conclui instalações e configurações
+RUN python3 -m pip install --upgrade pip && \
+    wget https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable/sfdx-linux-x64.tar.xz && \
+    mkdir ~/sfdx && \
+    tar xJf sfdx-linux-x64.tar.xz -C ~/sfdx --strip-components 1 && \
+    /root/sfdx/bin/sfdx plugins:install @salesforce/sfdx-scanner
+
+# Define o diretório de trabalho
+WORKDIR /app
+
+# Define o comando padrão para rodar quando iniciar o container
+CMD ["bash"]
