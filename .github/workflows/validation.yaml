@@ -53,7 +53,8 @@ jobs:
       - name: Check all modified folders and tar.gz the files if exist
         id: compactFiles
         run: |
-           find src -mindepth 1 -maxdepth 1 -type d | while read -r folder; do
+           cd src
+           find . -mindepth 1 -maxdepth 1 -type d | while read -r folder; do
              echo "Processing folder: $folder"
              cd "./$folder"
 
