@@ -53,7 +53,7 @@ jobs:
       - name: Check all modified folders and tar.gz the files if exist
         id: compactFiles
         run: |
-           while read -r folder; do
+           find src -mindepth 1 -maxdepth 1 -type d | while read -r folder; do
              echo "Processing folder: $folder"
              cd "$folder"
 
@@ -72,14 +72,14 @@ jobs:
 
            done
 
-      - name: lits `.tar.gz` files
-        run: ls -lh *.tar.gz || echo "file not found"
+      - name: list `src/.tar.gz` files
+        run: ls -lh src/*.tar.gz || echo "file not found"
    
       - name: Upload all .tar.gz files
         uses: actions/upload-artifact@v4
         with:
           name: "${{ github.run_id }}-tar-archives"
-          path: "*.tar.gz"
+          path: "src/*.tar.gz"
 
 
 
