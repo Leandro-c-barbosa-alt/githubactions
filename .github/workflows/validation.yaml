@@ -77,8 +77,10 @@ jobs:
 
            done
 
-      - name: list `./src/.tar.gz` files
-        run: ls -lh ./src/*.tar.gz || echo "file not found"
+      - name: list `.tar.gz` files
+        run: |
+          cd src
+          ls -la *.tar.gz || echo "file not found"
    
       - name: Upload all .tar.gz files
         uses: actions/upload-artifact@v4
