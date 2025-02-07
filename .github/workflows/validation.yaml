@@ -55,7 +55,7 @@ jobs:
         run: |
            find src -mindepth 1 -maxdepth 1 -type d | while read -r folder; do
              echo "Processing folder: $folder"
-             cd "$folder"
+             cd "./$folder"
 
              echo "Current directory: $(pwd)"
              echo "Listing files in current directory before SFDMU execution:"
@@ -72,14 +72,14 @@ jobs:
 
            done
 
-      - name: list `src/.tar.gz` files
-        run: ls -lh src/*.tar.gz || echo "file not found"
+      - name: list `./src/.tar.gz` files
+        run: ls -lh ./src/*.tar.gz || echo "file not found"
    
       - name: Upload all .tar.gz files
         uses: actions/upload-artifact@v4
         with:
           name: "${{ github.run_id }}-tar-archives"
-          path: "src/*.tar.gz"
+          path: "./src/*.tar.gz"
 
 
 
