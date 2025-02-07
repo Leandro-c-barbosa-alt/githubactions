@@ -66,9 +66,9 @@ jobs:
 
              OBJECT_NAME=$(basename "$folder")
 
-             if [ -d "logs" ] || [ -d "source" ] [ -d "target" ]; then
+             if [ -d "logs" ] || [ -d "source" ] || [ -d "target" ]; then
                echo "Checking if logs, source or target files exist"
-               tar -czf ../$OBJECT_NAME-logs.zip  logs source target
+               tar -czf ../$OBJECT_NAME.zip  logs source target
              else
                echo "No logs, source or target files found."
              fi
