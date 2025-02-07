@@ -9,7 +9,7 @@ on:
   pull_request:
     types: [opened, synchronize]
     branches:
-      - "releases/${{ vars.FUTURE_RELEASE }}*"
+      - "releases/${{ vars.FUTURE_RELEASE }}"
     paths-ignore:
       - "**/README.md"
 
@@ -24,4 +24,4 @@ jobs:
          
           echo ${{ vars.FUTURE_RELEASE }}
 
-     
+  
