@@ -8,7 +8,7 @@ on:
   pull_request:
     types: [opened, synchronize]
     branches:
-      - releases/v*
+      - "releases/${{ vars.CURRENT_RELEASE }}"
     paths-ignore:
       - "**/README.md"
 
