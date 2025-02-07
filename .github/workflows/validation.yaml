@@ -45,4 +45,10 @@ jobs:
           touch src\BBB__c\source\1.log
           touch src\BBB__c\target\1.log
 
+      - name: check files created
+        run: |
+          ls -la
+      
+      
+
 
