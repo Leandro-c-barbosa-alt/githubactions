@@ -8,7 +8,7 @@ on:
   pull_request:
     types: [opened, synchronize]
     branches:
-      - "releases/${{ vars.CURRENT_RELEASE }}*"
+      - releases/v*
     paths-ignore:
       - "**/README.md"
 
@@ -18,6 +18,7 @@ jobs:
    
     steps:
       - name: test
+        if: contains(github.base_ref, vars.CURRENT_RELEASE)
         continue-on-error: true
         run: |
          
