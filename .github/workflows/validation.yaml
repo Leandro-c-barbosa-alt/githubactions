@@ -5,7 +5,7 @@ run-name: Workflow run PR No - ${{ github.event.pull_request.number }} and PR ti
 on:
   pull_request:
     branches:
-      - DEVCI
+      - main
 
     types:
       - opened
