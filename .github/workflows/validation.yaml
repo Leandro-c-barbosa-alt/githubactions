@@ -73,6 +73,8 @@ jobs:
                echo "No logs, source or target files found."
              fi
 
+             cd ..
+
            done
 
       - name: list `./src/.tar.gz` files
