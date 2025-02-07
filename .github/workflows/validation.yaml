@@ -29,25 +29,25 @@ jobs:
       - name: create test files
         run: |
           mkdir src
-          mkdir src\AAA__c
-          mkdir src\AAA__c\logs
-          mkdir src\AAA__c\source
-          mkdir src\AAA__c\target
-          touch src\AAA__c\logs\1.log
-          touch src\AAA__c\source\1.log
-          touch src\AAA__c\target\1.log
+          mkdir src/AAA__c
+          mkdir src/AAA__c/logs
+          mkdir src/AAA__c/source
+          mkdir src/AAA__c/target
+          touch src/AAA__c/logs/1.log
+          touch src/AAA__c/source/1.log
+          touch src/AAA__c/target/1.log
 
-          mkdir src\BBB__c
-          mkdir src\BBB__c\logs
-          mkdir src\BBB__c\source
-          mkdir src\BBB__c\target
-          touch src\BBB__c\logs\1.log
-          touch src\BBB__c\source\1.log
-          touch src\BBB__c\target\1.log
+          mkdir src/BBB__c
+          mkdir src/BBB__c/logs
+          mkdir src/BBB__c/source
+          mkdir src/BBB__c/target
+          touch src/BBB__c/logs/1.log
+          touch src/BBB__c/source/1.log
+          touch src/BBB__c/target/1.log
 
       - name: check files created
         run: |
-          ls -la
+          ls -lRa
       
       
 
