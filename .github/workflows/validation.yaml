@@ -49,6 +49,37 @@ jobs:
         run: |
           ls -lRa
       
-      
+      # Check all modified folders and tar.gz the files if exist
+      - name: Check all modified folders and tar.gz the files if exist
+        id: compactFiles
+        run: |
+           while read -r folder; do
+             echo "Processing folder: $folder"
+             cd "$folder"
+
+             echo "Current directory: $(pwd)"
+             echo "Listing files in current directory before SFDMU execution:"
+             ls -la  
+
+             OBJECT_NAME=$(basename "$folder")
+
+             if [ -d "logs" ] || [ -d "source" ] [ -d "target" ]; then
+               echo "Checking if logs, source or target files exist"
+               tar -czf ../$OBJECT_NAME-logs.zip  logs source target
+             else
+               echo "No logs, source or target files found."
+             fi
+
+           done
+
+      - name: lits `.tar.gz` files
+        run: ls -lh *.tar.gz || echo "file not found"
+   
+      - name: Upload all .tar.gz files
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ github.run_id }}-tar-archives"
+          path: "*.tar.gz"
+
 
 
