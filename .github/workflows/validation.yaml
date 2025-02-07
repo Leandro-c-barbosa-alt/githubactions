@@ -1,74 +1,48 @@
-name: Validation Pipeline
+name: Salesforce Data Import Pipeline - DEVCI
 
-# Workflow run name
 run-name: Workflow run PR No - ${{ github.event.pull_request.number }} and PR title - ${{ github.event.pull_request.title }} by @${{ github.actor }}
 
 on:
-  workflow_dispatch:
-    inputs:
-      pr_number:
-        description: 'Pull request number'
-        required: true
   pull_request:
-    types: [opened, synchronize]
     branches:
-      - main
-    paths-ignore:
-      - "**/README.md"
+      - DEVCI
+
+    types:
+      - opened
+      - labeled
+
+    labels:
+      - 'Deploy Again'
 
 jobs:
-  validate_pr:
+  Salesforce-Data-Import:
     runs-on: ubuntu-latest
-    environment: CI
-    # concurrency: 
-    #   group: salesforce-pipeline
-    #   cancel-in-progress: false
-    env:
-      GH_TOKEN: ${{secrets.GH_TOKEN}}
+    
     steps:
-      - name: Install jq
-        run: sudo apt-get install -y jq
+      # Checkout the current repository with all branches
+      - id: CheckoutRepo
+        name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: create test files
+        run: |
+          mkdir src
+          mkdir src\AAA__c
+          mkdir src\AAA__c\logs
+          mkdir src\AAA__c\source
+          mkdir src\AAA__c\target
+          touch src\AAA__c\logs\1.log
+          touch src\AAA__c\source\1.log
+          touch src\AAA__c\target\1.log
 
-      - name: Check for running workflows
-        id: check-workflow
-        continue-on-error: true
-        run: |
-          if [ -z "$GITHUB_REF" ]; then
-            PR_NUMBER=${{ github.event.inputs.pr_number }}
-          else
-            PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
-          fi
-          echo "PR_NUMBER=${PR_NUMBER}" >> $GITHUB_ENV
+          mkdir src\BBB__c
+          mkdir src\BBB__c\logs
+          mkdir src\BBB__c\source
+          mkdir src\BBB__c\target
+          touch src\BBB__c\logs\1.log
+          touch src\BBB__c\source\1.log
+          touch src\BBB__c\target\1.log
 
-          
-          # Obtenha todas as execuções de workflow em progresso
-          ALL_WORKFLOWS=$(curl -s -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-              https://api.github.com/repos/${{ github.repository }}/actions/runs?status=in_progress)
-          echo "ALL_WORKFLOWS=${ALL_WORKFLOWS}"
-          
-          # Filtre as execuções de workflow que correspondem ao nome
-          RUNNING_WORKFLOWS=$(echo $ALL_WORKFLOWS | jq -r '[.workflow_runs[] | select(.name == "Validation Pipeline" or .name == "Deploy Pipeline")] | length')
-          
-          # Imprima os valores filtrados
-          echo "RUNNING_WORKFLOWS=${RUNNING_WORKFLOWS}"
-          
-          if [ "$RUNNING_WORKFLOWS" -gt 0 ]; then
-            echo "There is a workflow already running. Exiting and re-triggering..."
-            exit 1
-          fi
-  
-      - name: Run Salesforce Validation
-        if: steps.check-workflow.outcome == 'success'
-        run: |
-          echo "Running Salesforce Validation"
-          sleep 60s
-     
-      - name: Re-trigger workflow
-        if: steps.check-workflow.outcome != 'success'
-        run: |
-           curl -s -X POST -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-              -H "Accept: application/vnd.github.v3+json" \
-              https://api.github.com/repos/${{ github.repository }}/issues \
-              -d '{"title": "Pending Validation PR #'"${PR_NUMBER}"'", "body": "Re-trigger validation for PR #'"${PR_NUMBER}"'", "labels": ["pending-validation"]}'
-            exit 0
-            
+
