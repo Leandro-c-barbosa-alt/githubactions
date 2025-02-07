@@ -1,5 +1,6 @@
 name: Validation test v2.3
 
+
 # Workflow run name
 run-name: Workflow run PR No - ${{ github.event.pull_request.number }} and PR title - ${{ github.event.pull_request.title }} by @${{ github.actor }}
 
@@ -9,6 +10,7 @@ on:
     types: [opened, synchronize]
     branches:
       - releases/v*
+
     paths-ignore:
       - "**/README.md"
 
@@ -24,4 +26,4 @@ jobs:
          
           echo ${{ vars.FUTURE_RELEASE }}
 
-     
+  
