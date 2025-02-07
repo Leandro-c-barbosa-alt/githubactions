@@ -10,6 +10,7 @@ on:
     types: [opened, synchronize]
     branches:
       - "releases/${{ vars.FUTURE_RELEASE }}"
+
     paths-ignore:
       - "**/README.md"
 
@@ -19,6 +20,7 @@ jobs:
    
     steps:
       - name: test
+        if: contains(github.base_ref, vars.FUTURE_RELEASE)
         continue-on-error: true
         run: |
          
