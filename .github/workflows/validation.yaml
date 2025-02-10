@@ -95,7 +95,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        file: ${{ fromJson(needs.Salesforce-Data-Import.outputs.files) }}
+        file: ${{ fromJson(env.files) }}
     steps:
       - name: Upload de cada arquivo separadamente
         uses: actions/upload-artifact@v4
