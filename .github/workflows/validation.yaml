@@ -17,6 +17,8 @@ on:
 jobs:
   Salesforce-Data-Import:
     runs-on: ubuntu-latest
+    outputs:
+      files: ${{ steps.list.outputs.files }}
     
     steps:
       # Checkout the current repository with all branches
