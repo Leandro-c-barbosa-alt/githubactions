@@ -87,9 +87,9 @@ jobs:
       - name: Listar arquivos para matriz
         id: list
         run: |
-          echo "files=$(ls ./src/*.zip | jq -R -s -c 'split("\n")[:-1]')"
-          echo "files=$(ls ./src/*.zip | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_ENV
-          echo "::set-output name=files::$files"
+          files=$(ls ./src/*.zip | jq -R -s -c 'split("\n")[:-1]')
+          echo "Arquivos encontrados: $files"
+          echo "files=$files" >> "$GITHUB_OUTPUT"
   
   upload-files:
     needs: Salesforce-Data-Import
