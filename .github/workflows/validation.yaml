@@ -87,7 +87,7 @@ jobs:
       - name: Listar arquivos para matriz
         id: list
         run: |
-          files=$(ls ./src/*.zip | jq -R -s -c 'split("\n")[:-1]')
+          files=$(ls src/*.zip | xargs -n 1 basename | jq -R -s -c 'split("\n")[:-1]')
           echo "Arquivos encontrados: $files"
           echo "files=$files" >> "$GITHUB_OUTPUT"
 
@@ -116,6 +116,10 @@ jobs:
       - name: Listar arquivos baixados
         run: ls -l src/
 
+      - name: Debug matrix files
+        run: |
+          echo "Matrix files: ${{ needs.Salesforce-Data-Import.outputs.files }}"
+      
       - name: Upload de cada arquivo separadamente
         uses: actions/upload-artifact@v4
         with:
