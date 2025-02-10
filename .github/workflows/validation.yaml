@@ -84,7 +84,7 @@ jobs:
    
       - name: Upload all zip files
         run: |
-          for file in artifacts/*.zip; do
+          for file in ./src/*.zip; do
             filename=$(basename "$file" .zip)
             echo "Uploading $filename..."
             gh api \
