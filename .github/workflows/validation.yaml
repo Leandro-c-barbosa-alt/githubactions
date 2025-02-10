@@ -132,6 +132,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deletar os artifacts temporários imediatamente
-        uses: geekyeggo/delete-artifact@v2
+        uses: geekyeggo/delete-artifact@v5
         with:
           name: temp-artifacts
