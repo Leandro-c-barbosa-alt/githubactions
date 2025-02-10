@@ -81,17 +81,14 @@ jobs:
         run: |
           cd src
           ls -la *.zip || echo "file not found"
-   
-      - name: Upload all zip files
+
+      - name: Upload de cada arquivo separadamente
+        shell: bash
         run: |
           for file in ./src/*.zip; do
-            filename=$(basename "$file" .zip)
+            filename=$(basename "$file")
             echo "Uploading $filename..."
-            gh api \
-              -X POST \
-              -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-              -H "Accept: application/vnd.github+json" \
-              "/repos/${{ github.repository }}/actions/artifacts" \
+            gh workflow run upload-artifact \
               -F name="$filename" \
               -F path="$file"
           done
