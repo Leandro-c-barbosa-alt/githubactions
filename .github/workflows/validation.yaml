@@ -96,7 +96,6 @@ jobs:
         with:
           name: temp-artifacts
           path: src/*.zip
-          retention-days: 1 
   
   upload-files:
     needs: Salesforce-Data-Import
