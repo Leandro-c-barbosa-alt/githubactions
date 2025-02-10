@@ -111,10 +111,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: temp-artifacts
-          path: src
+          path: .
 
       - name: Listar arquivos baixados
-        run: ls -l src/
+        run: ls -l ./
 
       - name: Debug matrix files
         run: |
