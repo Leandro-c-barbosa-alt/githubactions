@@ -96,6 +96,7 @@ jobs:
         with:
           name: temp-artifacts
           path: src/*.zip
+          retention-days: 1 
   
   upload-files:
     needs: Salesforce-Data-Import
@@ -125,3 +126,13 @@ jobs:
         with:
           name: ${{ matrix.file }}
           path: ${{ matrix.file }}
+          retention-days: 7 
+
+  cleanup:
+    needs: upload-files  
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deletar os artifacts temporários imediatamente
+        uses: geekyeggo/delete-artifact@v2
+        with:
+          name: temp-artifacts
