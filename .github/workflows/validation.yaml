@@ -83,14 +83,14 @@ jobs:
           ls -la *.zip || echo "file not found"
    
       - name: Upload de cada arquivo separadamente
-          run: |
-            for file in ./src/*.zip; do
-              filename=$(basename "$file")
-              echo "Uploading $filename..."
-              gh run upload-artifact --name "$filename" --path "$file"
-            done
-          env:
-            GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          for file in ./src/*.zip; do
+            filename=$(basename "$file")
+            echo "Uploading $filename..."
+            gh run upload-artifact --name "$filename" --path "$file"
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
 
 
