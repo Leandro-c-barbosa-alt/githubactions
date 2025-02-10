@@ -89,14 +89,18 @@ jobs:
         run: |
           echo "files=$(ls ./src/*.zip | jq -R -s -c 'split("\n")[:-1]')"
           echo "files=$(ls ./src/*.zip | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_ENV
+          echo "::set-output name=files::$files"
   
   upload-files:
     needs: Salesforce-Data-Import
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        file: ${{ fromJson(env.files) }}
+        file: ${{ fromJson(needs.Salesforce-Data-Import.outputs.files) }}
     steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
       - name: Upload de cada arquivo separadamente
         uses: actions/upload-artifact@v4
         with:
