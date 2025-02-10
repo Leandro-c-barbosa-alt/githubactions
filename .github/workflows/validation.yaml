@@ -82,28 +82,19 @@ jobs:
           cd src
           ls -la *.zip || echo "file not found"
 
-      - name: Instalar GitHub CLI (`gh`)
-        run: |
-          sudo apt update
-          sudo apt install -y gh
-
-      - name: Autenticar no GitHub CLI
-        run: |
-          echo "${{ secrets.GH_TOKEN }}" | gh auth login --with-token
+      - name: Listar arquivos para matriz
+        id: list
+        run: echo "files=$(ls ./src/*.zip | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_ENV
   
-      - name: Upload de cada arquivo .zip separadamente
-        shell: bash
-        run: |
-          for file in ./src/*.zip; do
-            filename=$(basename "$file")
-            echo "Fazendo upload de $filename..."
-            gh api \
-              -X POST \
-              -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-              -H "Accept: application/vnd.github+json" \
-              "/repos/${{ github.repository }}/actions/artifacts" \
-              -F name="$filename" \
-              -F path="$file"
-          done
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+  upload-files:
+    needs: Salesforce-Data-Import
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        file: ${{ fromJson(needs.Salesforce-Data-Import.outputs.files) }}
+    steps:
+      - name: Upload de cada arquivo separadamente
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.file }}
+          path: ${{ matrix.file }}
