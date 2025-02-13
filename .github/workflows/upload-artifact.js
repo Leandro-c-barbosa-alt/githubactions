@@ -9,7 +9,7 @@ async function uploadArtifact() {
     }
 
     const files = [`./${artifactName}`]; // Lista de arquivos para upload
-    const rootDirectory = '.'; // Diretório base onde o arquivo está armazenado
+    const rootDirectory = '../'; // Diretório base onde o arquivo está armazenado
 
     const options = {
         retentionDays: 10 // Define o tempo que o artefato ficará disponível (opcional)

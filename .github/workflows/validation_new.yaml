@@ -79,7 +79,7 @@ jobs:
              if [ -d "logs" ] || [ -d "source" ] || [ -d "target" ]; then
                echo "Checking if logs, source or target files exist"
                tar -czf ../$OBJECT_NAME.zip  logs source target
-               node ../../.github/workflows/upload-artifact.js ../$OBJECT_NAME.zip
+               node ../../.github/workflows/upload-artifact.js $OBJECT_NAME.zip
              else
                echo "No logs, source or target files found."
              fi
