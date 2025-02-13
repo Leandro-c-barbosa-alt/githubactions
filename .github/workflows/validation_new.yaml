@@ -5,7 +5,7 @@ run-name: Workflow run PR No - ${{ github.event.pull_request.number }} and PR ti
 on:
   pull_request:
     branches:
-      - main2
+      - main
 
     types:
       - opened
@@ -51,6 +51,14 @@ jobs:
         run: |
           ls -lRa
       
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Instalar dependências
+        run: npm install @actions/artifact
+
       # Check all modified folders and tar.gz the files if exist
       - name: Check all modified folders and tar.gz the files if exist
         id: compactFiles
@@ -71,6 +79,7 @@ jobs:
              if [ -d "logs" ] || [ -d "source" ] || [ -d "target" ]; then
                echo "Checking if logs, source or target files exist"
                tar -czf ../$OBJECT_NAME.zip  logs source target
+               node ../../upload-artifact.js ../$OBJECT_NAME.zip
              else
                echo "No logs, source or target files found."
              fi
