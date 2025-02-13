@@ -3,6 +3,10 @@ const { DefaultArtifactClient } = require('@actions/artifact');
 async function uploadArtifact() {
     // Obtém o nome do arquivo do argumento de execução
     const artifactName = process.argv[2];
+    const runId = process.env.GITHUB_RUN_ID;
+    const repo = process.env.GITHUB_REPOSITORY;
+    const token = process.env.GITHUB_TOKEN; // Usando GITHUB_TOKEN
+    
     if (!artifactName) {
         console.error("Erro: Você deve fornecer o nome do arquivo para upload.");
         process.exit(1);
