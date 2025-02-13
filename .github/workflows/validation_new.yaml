@@ -62,6 +62,11 @@ jobs:
       # Check all modified folders and tar.gz the files if exist
       - name: Check all modified folders and tar.gz the files if exist
         id: compactFiles
+        env:
+          ACTIONS_RUNTIME_TOKEN: ${{ secrets.GH_TOKEN }}
+          ACTIONS_RUNTIME_URL: ${{ github.server_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
         run: |
            cd src
            find . -mindepth 1 -maxdepth 1 -type d | while read -r folder; do
@@ -85,12 +90,7 @@ jobs:
              fi
 
              cd ..
-        env:
-          ACTIONS_RUNTIME_TOKEN: ${{ secrets.GH_TOKEN }}
-          ACTIONS_RUNTIME_URL: ${{ github.server_url }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_RUN_ID: ${{ github.run_id }}
-      
+       
       - name: list `.zip` files
         run: |
           cd src
