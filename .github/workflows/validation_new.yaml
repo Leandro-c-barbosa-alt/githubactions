@@ -79,7 +79,9 @@ jobs:
              if [ -d "logs" ] || [ -d "source" ] || [ -d "target" ]; then
                echo "Checking if logs, source or target files exist"
                tar -czf ../$OBJECT_NAME.zip  logs source target
-               node ../../upload-artifact.js ../$OBJECT_NAME.zip
+               pwd
+               ls -la
+               node ../upload-artifact.js ../$OBJECT_NAME.zip
              else
                echo "No logs, source or target files found."
              fi
