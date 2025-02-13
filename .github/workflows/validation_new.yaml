@@ -63,7 +63,7 @@ jobs:
       - name: Check all modified folders and tar.gz the files if exist
         id: compactFiles
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          ACTIONS_RUNTIME_TOKEN: ${{ secrets.GH_TOKEN }}
           ACTIONS_RUNTIME_URL: ${{ github.server_url }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_RUN_ID: ${{ github.run_id }}
