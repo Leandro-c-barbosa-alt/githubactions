@@ -90,6 +90,8 @@ jobs:
              fi
 
              cd ..
+            
+           done
        
       - name: list `.zip` files
         run: |
