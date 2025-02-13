@@ -85,9 +85,12 @@ jobs:
              fi
 
              cd ..
-
-           done
-
+        env:
+          ACTIONS_RUNTIME_TOKEN: ${{ secrets.GH_TOKEN }}
+          ACTIONS_RUNTIME_URL: ${{ github.server_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+      
       - name: list `.zip` files
         run: |
           cd src
@@ -99,48 +102,3 @@ jobs:
           files=$(ls src/*.zip | xargs -n 1 basename | jq -R -s -c 'split("\n")[:-1]')
           echo "Arquivos encontrados: $files"
           echo "files=$files" >> "$GITHUB_OUTPUT"
-
-      - name: Upload dos arquivos para persistência entre jobs
-        uses: actions/upload-artifact@v4
-        with:
-          name: temp-artifacts
-          path: src/*.zip
-  
-  upload-files:
-    needs: Salesforce-Data-Import
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        file: ${{ fromJson(needs.Salesforce-Data-Import.outputs.files) }}
-    steps:
-      - name: Checkout do repositório
-        uses: actions/checkout@v4
-
-      - name: Baixar arquivos do job anterior
-        uses: actions/download-artifact@v4
-        with:
-          name: temp-artifacts
-          path: .
-
-      - name: Listar arquivos baixados
-        run: ls -l ./
-
-      - name: Debug matrix files
-        run: |
-          echo "Matrix files: ${{ needs.Salesforce-Data-Import.outputs.files }}"
-      
-      - name: Upload de cada arquivo separadamente
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.file }}
-          path: ${{ matrix.file }}
-          retention-days: 7 
-
-  cleanup:
-    needs: upload-files  
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deletar os artifacts temporários imediatamente
-        uses: geekyeggo/delete-artifact@v5
-        with:
-          name: temp-artifacts
