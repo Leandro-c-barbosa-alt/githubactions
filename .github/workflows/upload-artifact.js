@@ -8,7 +8,7 @@ async function uploadArtifact() {
         process.exit(1);
     }
 
-    const files = [`./${artifactName}`]; // Lista de arquivos para upload
+    const files = [`../${artifactName}`]; // Lista de arquivos para upload
     const rootDirectory = '../'; // Diretório base onde o arquivo está armazenado
 
     const options = {
