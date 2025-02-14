@@ -86,7 +86,7 @@ jobs:
                echo "Checking if logs, source or target files exist"
                tar -czf ../$OBJECT_NAME.zip  logs source target
                
-               python ../../.github/workflows/helper.py  ${{ github.run_id }} ${{ secrets.GH_PAT }} $OBJECT_NAME.zip
+               python ../../.github/workflows/helper.py  ${{ github.run_id }} ${{ secrets.GH_PAT }} ../$OBJECT_NAME.zip
              else
                echo "No logs, source or target files found."
              fi
