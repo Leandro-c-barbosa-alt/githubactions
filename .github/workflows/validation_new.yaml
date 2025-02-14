@@ -86,7 +86,7 @@ jobs:
                echo "Checking if logs, source or target files exist"
                tar -czf ../$OBJECT_NAME.zip  logs source target
                
-               python ../../.github/workflows/helper.py  ${{ github.run_id }} ${{ secrets.GH_PAT }} ../$OBJECT_NAME.zip
+               gh run upload-artifact --name "$OBJECT_NAME" --path "../$OBJECT_NAME.zip"
              else
                echo "No logs, source or target files found."
              fi
@@ -94,7 +94,8 @@ jobs:
              cd ..
             
            done
-       ##node ../../.github/workflows/upload-artifact.js $OBJECT_NAME.zip
+       ## node ../../.github/workflows/upload-artifact.js $OBJECT_NAME.zip
+       ## python ../../.github/workflows/helper.py  ${{ github.run_id }} ${{ secrets.GH_PAT }} ../$OBJECT_NAME.zip
       - name: list `.zip` files
         run: |
           cd src
