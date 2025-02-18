@@ -73,7 +73,7 @@ jobs:
               done
               # if directories exist, create a tar archive
               if [ ${#existing_dirs[@]} -gt 0 ]; then
-                tar -czf "../$OBJECT_NAME-logs.zip" "${existing_dirs[@]}"
+                zip -r "../$OBJECT_NAME-logs.zip" "${existing_dirs[@]}"
                 echo "File ../$OBJECT_NAME-logs.zip created"
               else
                 echo "No logs, source or target files found."
