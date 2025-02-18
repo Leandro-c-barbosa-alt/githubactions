@@ -47,7 +47,7 @@ jobs:
           touch src/BBB__c/source/1.log
           touch src/BBB__c/target/1.log
 
-      - name: check files created
+      - name: check files created before zip
         run: |
           ls -lRa
   
@@ -80,6 +80,11 @@ jobs:
               fi
               cd ..
             done
+
+      - name: check files created after zip
+        run: |
+          ls -lRa
+        
       - name: list `.zip` files
         run: ls -lh *.zip || echo "file not found"
 
