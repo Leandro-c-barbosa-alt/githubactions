@@ -54,7 +54,6 @@ jobs:
       # Check all modified folders and zip the logs if exist
       - name: Check all modified folders and zip the logs if exist
         id: zipLogs
-        if: env.modified_folders_exists == 'true'
         run: |
             cd src
             while read -r folder; do
