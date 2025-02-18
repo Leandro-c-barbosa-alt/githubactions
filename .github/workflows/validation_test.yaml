@@ -83,13 +83,16 @@ jobs:
 
       - name: check files created after zip
         run: |
+          cd src
           ls -lRa
         
       - name: list `.zip` files
-        run: ls -lh *.zip || echo "file not found"
+        run: |
+          cd src
+          ls -lh *.zip || echo "file not found"
 
       - name: Upload all .zip files
         uses: actions/upload-artifact@v4
         with:
           name: "${{ github.run_id }}-tar-archives"
-          path: "*.zip"
+          path: "src/*.zip"
