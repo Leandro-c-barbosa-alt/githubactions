@@ -51,10 +51,24 @@ jobs:
         run: |
           ls -lRa
       
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Instalar dependências
+        run: npm install @actions/artifact
+
       # Check all modified folders and tar.gz the files if exist
       - name: Check all modified folders and tar.gz the files if exist
         id: compactFiles
+        env:
+          ACTIONS_RUNTIME_TOKEN: ${{ secrets.GH_PAT }}
+          ACTIONS_RUNTIME_URL: ${{ github.server_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
         run: |
+           env | grep GITHUB_
            cd src
            find . -mindepth 1 -maxdepth 1 -type d | while read -r folder; do
              echo "Processing folder: $folder"
@@ -71,14 +85,17 @@ jobs:
              if [ -d "logs" ] || [ -d "source" ] || [ -d "target" ]; then
                echo "Checking if logs, source or target files exist"
                tar -czf ../$OBJECT_NAME.zip  logs source target
+               
+               gh run upload-artifact --name "$OBJECT_NAME" --path "../$OBJECT_NAME.zip"
              else
                echo "No logs, source or target files found."
              fi
 
              cd ..
-
+            
            done
-
+       ## node ../../.github/workflows/upload-artifact.js $OBJECT_NAME.zip
+       ## python ../../.github/workflows/helper.py  ${{ github.run_id }} ${{ secrets.GH_PAT }} ../$OBJECT_NAME.zip
       - name: list `.zip` files
         run: |
           cd src
@@ -90,48 +107,3 @@ jobs:
           files=$(ls src/*.zip | xargs -n 1 basename | jq -R -s -c 'split("\n")[:-1]')
           echo "Arquivos encontrados: $files"
           echo "files=$files" >> "$GITHUB_OUTPUT"
-
-      - name: Upload dos arquivos para persistência entre jobs
-        uses: actions/upload-artifact@v4
-        with:
-          name: temp-artifacts
-          path: src/*.zip
-  
-  upload-files:
-    needs: Salesforce-Data-Import
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        file: ${{ fromJson(needs.Salesforce-Data-Import.outputs.files) }}
-    steps:
-      - name: Checkout do repositório
-        uses: actions/checkout@v4
-
-      - name: Baixar arquivos do job anterior
-        uses: actions/download-artifact@v4
-        with:
-          name: temp-artifacts
-          path: .
-
-      - name: Listar arquivos baixados
-        run: ls -l ./
-
-      - name: Debug matrix files
-        run: |
-          echo "Matrix files: ${{ needs.Salesforce-Data-Import.outputs.files }}"
-      
-      - name: Upload de cada arquivo separadamente
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.file }}
-          path: ${{ matrix.file }}
-          retention-days: 7 
-
-  cleanup:
-    needs: upload-files  
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deletar os artifacts temporários imediatamente
-        uses: geekyeggo/delete-artifact@v5
-        with:
-          name: temp-artifacts

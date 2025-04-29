@@ -1,0 +1,98 @@
+name: Salesforce Data Import Pipeline - DEVCI
+
+run-name: Workflow run PR No - ${{ github.event.pull_request.number }} and PR title - ${{ github.event.pull_request.title }} by @${{ github.actor }}
+
+on:
+  pull_request:
+    branches:
+      - main2
+
+    types:
+      - opened
+      - labeled
+
+    labels:
+      - 'Deploy Again'
+
+jobs:
+  Salesforce-Data-Import:
+    runs-on: ubuntu-latest
+    outputs:
+      files: ${{ steps.list.outputs.files }}
+    
+    steps:
+      # Checkout the current repository with all branches
+      - id: CheckoutRepo
+        name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: create test files
+        run: |
+          mkdir src
+          mkdir src/AAA__c
+          mkdir src/AAA__c/logs
+          mkdir src/AAA__c/source
+          mkdir src/AAA__c/target
+          touch src/AAA__c/logs/1.log
+          touch src/AAA__c/source/1.log
+          touch src/AAA__c/target/1.log
+
+          mkdir src/BBB__c
+          mkdir src/BBB__c/logs
+          mkdir src/BBB__c/source
+          mkdir src/BBB__c/target
+          touch src/BBB__c/logs/1.log
+          touch src/BBB__c/source/1.log
+          touch src/BBB__c/target/1.log
+
+      - name: check files created before zip
+        run: |
+          ls -lRa
+  
+      # Check all modified folders and zip the logs if exist
+      - name: Check all modified folders and zip the logs if exist
+        id: zipLogs
+        run: |
+            cd src
+            find . -mindepth 1 -maxdepth 1 -type d | while read -r folder; do
+              echo "Processing folder: $folder"
+              cd "$folder"
+              echo "Current directory: $(pwd)"
+              echo "Listing files in current directory after SFDMU execution:"
+              ls -la  
+              OBJECT_NAME=$(basename "$folder")
+              dirs=("logs" "source" "target") 
+              existing_dirs=()
+              # check if the directories exist
+              for dir in "${dirs[@]}"; do
+                if [ -d "$dir" ]; then
+                  existing_dirs+=("$dir")
+                fi
+              done
+              # if directories exist, create a tar archive
+              if [ ${#existing_dirs[@]} -gt 0 ]; then
+                zip -r "../$OBJECT_NAME-logs.zip" "${existing_dirs[@]}"
+                echo "File ../$OBJECT_NAME-logs.zip created"
+              else
+                echo "No logs, source or target files found."
+              fi
+              cd ..
+            done
+
+      - name: check files created after zip
+        run: |
+          cd src
+          ls -lRa
+        
+      - name: list `.zip` files
+        run: |
+          cd src
+          ls -lh *.zip || echo "file not found"
+
+      - name: Upload all .zip files
+        uses: actions/upload-artifact@v4
+        with:
+          name: "Data Load Logs"
+          path: "src/*.zip"
