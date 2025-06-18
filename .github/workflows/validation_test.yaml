@@ -7,7 +7,7 @@ on:
   pull_request:
     types: [opened, synchronize]
     branches:
-      - ${{vars.TARGET_BRANCH_NAME}}
+      - main
     paths-ignore:
       - "**/README.md"
 
