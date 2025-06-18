@@ -1,0 +1,26 @@
+name: Validation Pipeline
+
+# Workflow run name
+run-name: Workflow run PR No - ${{ github.event.pull_request.number }} and PR title - ${{ github.event.pull_request.title }} by @${{ github.actor }}
+
+on: 
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - main
+    paths-ignore:
+      - "**/README.md"
+
+jobs:
+  validate_pr:
+    runs-on: ubuntu-latest
+    environment: CI
+    env:
+      GH_TOKEN: ${{secrets.GH_TOKEN}}
+    steps:
+    
+      - name: Run Salesforce Validation
+        if: steps.check-workflow.outcome == 'success'
+        run: |
+          echo "Running Salesforce Validation"
+     
