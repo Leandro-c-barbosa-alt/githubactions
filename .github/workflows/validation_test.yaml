@@ -17,10 +17,9 @@ jobs:
     environment: CI
     env:
       GH_TOKEN: ${{secrets.GH_TOKEN}}
+    if: (((startswith(github.head_ref,'feature') || startswith(github.head_ref,'defect')) && (github.event_name == 'pull_request')) && contains('["Leandro-c-barbosa-alt"]', github.actor))
     steps:
-    
       - name: Run Salesforce Validation
-        if: steps.check-workflow.outcome == 'success'
         run: |
           echo "Running Salesforce Validation"
      
