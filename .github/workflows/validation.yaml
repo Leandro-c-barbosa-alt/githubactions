@@ -12,7 +12,7 @@ on:
   pull_request:
     types: [opened, synchronize]
     branches:
-      - main
+      - main2
     paths-ignore:
       - "**/README.md"
 
