@@ -18,7 +18,7 @@ jobs:
     env:
       GH_TOKEN: ${{secrets.GH_TOKEN}}
 
-    if: (contains("${{ vars.SOURCE_BRANCH_NAME }}", startsWith(github.head_ref, split("${{ vars.SOURCE_BRANCH_NAME }}", '|')[0])) && (github.event_name == 'pull_request') && contains('["Leandro-c-barbosa-alt"]', github.actor))
+    if: (startsWith(github.head_ref, split("${{ vars.SOURCE_BRANCH_NAME }}", ',')[0])) && (github.event_name == 'pull_request') && contains('["Leandro-c-barbosa-alt"]', github.actor))
     steps:
       - name: Run Salesforce Validation
         run: |
