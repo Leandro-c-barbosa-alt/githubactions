@@ -17,7 +17,9 @@ jobs:
     environment: CI
     env:
       GH_TOKEN: ${{secrets.GH_TOKEN}}
-    if: (contains(github.head_ref, 'newfeature/ defect/ release/') && (github.event_name == 'pull_request') && contains('["Leandro-c-barbosa-alt"]', github.actor))
+      ALLOWED_BRANCHS: ${{ vars.SOURCE_BRANCH_NAME }}
+
+    if: (contains(env.ALLOWED_BRANCHS, startsWith(github.head_ref, split(env.ALLOWED_BRANCHS, '|')[0])) && (github.event_name == 'pull_request') && contains('["Leandro-c-barbosa-alt"]', github.actor))
     steps:
       - name: Run Salesforce Validation
         run: |
