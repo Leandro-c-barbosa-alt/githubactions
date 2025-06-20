@@ -12,12 +12,6 @@ on:
       - "**/README.md"
 
 jobs:
-  check_conditions:
-    steps:
-      - name: check
-        run: |
-            
-
   validate_pr:
     runs-on: ubuntu-latest
     environment: CI
