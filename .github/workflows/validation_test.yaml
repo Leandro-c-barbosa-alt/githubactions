@@ -12,12 +12,18 @@ on:
       - "**/README.md"
 
 jobs:
+  check_conditions:
+    steps:
+      - name: check
+        run: |
+            
+
   validate_pr:
     runs-on: ubuntu-latest
     environment: CI
     env:
       GH_TOKEN: ${{secrets.GH_TOKEN}}
-    if: ((github.head_ref =~ "^feature|^hotfix|^defect") && (github.event_name == 'pull_request')) && contains('["Leandro-c-barbosa-alt"]', github.actor))
+    if: (contains('feature/ hotfix/ defect/', github.head_ref) && (github.event_name == 'pull_request')) && contains('["Leandro-c-barbosa-alt"]', github.actor))
     steps:
       - name: Run Salesforce Validation
         run: |
