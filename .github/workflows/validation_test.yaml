@@ -22,5 +22,5 @@ jobs:
     steps:
       - name: Run Salesforce Validation
         run: |
-          echo "Running Salesforce Validation ${{ vars.SOURCE_BRANCH_NAME }} "
+          echo "Running Salesforce Validation ${{ vars.SOURCE_BRANCH_NAME }} " 
      
