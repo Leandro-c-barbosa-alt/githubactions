@@ -19,6 +19,11 @@ jobs:
       GH_TOKEN: ${{secrets.GH_TOKEN}}
       SOURCE_BRANCH_NAME_1: ${{ vars.SOURCE_BRANCH_NAME_1 }}
       SOURCE_BRANCH_NAME_2: ${{ vars.SOURCE_BRANCH_NAME_2 }}
+      GH_RUN_NUMBER: ${{ github.run_number }}
+      GH_SERVER_URL: ${{ github.server_url }}
+      GH_REPO: ${{ github.repository }}
+      GH_RUN_ID: ${{ github.run_id }}
+      GH_PR_NUMBER: ${{ github.event.number }}
 
     if: (startsWith(github.head_ref, ${{ vars.SOURCE_BRANCH_NAME_1 }}) || startsWith(github.head_ref, ${{ vars.SOURCE_BRANCH_NAME_2 }}) && (github.event_name == 'pull_request') && contains('["Leandro-c-barbosa-alt"]', github.actor))
     steps:
@@ -35,6 +40,47 @@ jobs:
           ls -la > artifact1.txt
           ls > artifact2.txt
       
+      # Save PR number in PR_RUN text file
+      - name: Save the PR number
+        if: ${{github.event_name == 'pull_request'}}
+        shell: bash
+        run: |
+          echo "$GH_PR_NUMBER" > pr_num.txt
+
+      # Upload PR number
+      - name: Upload Artifact PR number
+        if: ${{github.event_name == 'pull_request'}}
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr_num
+          path: ./pr_num.txt
+          retention-days: 1
+
+      # Save source branch of PR
+      - name: Save the source branch of Pull request
+        if: ${{github.event_name == 'pull_request'}}
+        shell: bash
+        run: |
+          echo "$GH_HEAD_REF" > branch_name.txt
+
+      # Upload the source branch of Pull request
+      - name: Upload Artifact source branch of Pull request
+        if: ${{github.event_name == 'pull_request'}}
+        uses: actions/upload-artifact@v4
+        with:
+          name: branch_name
+          path: ./branch_name.txt
+          retention-days: 1
+
+      # Create a PR comment thread
+      - name: Create PR comment Thread
+        run: |
+          echo -e "![Altice_Logo](https://play-lh.googleusercontent.com/ld9BbSXJcTilPGb_uQCrgxI9ZvtORR8jh45yoBxwuyq8vDZDKYQZozUrKZz0xGSODw=w240-h480-rw)
+            ## **Starting build #[$GH_RUN_NUMBER][1]**
+            ------
+            [1]: $GH_SERVER_URL/$GH_REPO/actions/runs/$GH_RUN_ID" > comments.txt
+          gh issue comment "$GH_PR_NUMBER" -F comments.txt
+
       - uses: actions/upload-artifact@v4
         name: Artfifact Upload - ./artifact1.txt
         with:
@@ -47,4 +93,3 @@ jobs:
           name: artifact2.txt
           path: ./artifact2.txt
 
-          

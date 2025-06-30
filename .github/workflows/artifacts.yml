@@ -25,6 +25,8 @@ jobs:
         run: |
           sudo rm -rf artifact1.txt
           sudo rm -rf artifact2.txt
+          sudo rm -rf pr_num
+          sudo rm -rf branch_name
           ls -la
 
       # Download worflow artifacts from Git2SF workflow
@@ -169,4 +171,6 @@ jobs:
         run: |
           sudo rm -rf artifact1.txt
           sudo rm -rf artifact2.txt
+          sudo rm -rf pr_num
+          sudo rm -rf branch_name
           ls -la
