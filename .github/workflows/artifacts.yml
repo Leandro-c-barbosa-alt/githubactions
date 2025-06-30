@@ -1,0 +1,172 @@
+name: Get the Artifact URLs - Validation
+
+# Workflow run name
+run-name: Get the Artifact URLs from git2SF-validation workflow
+
+on:
+  workflow_run:
+    workflows: [Validation Pipeline - test]
+    types:
+      - completed
+
+jobs:
+  get_artifact_url:
+    runs-on: ubuntu-22.04
+    env:
+      GH_RUN_ID: ${{github.event.workflow_run.id}}
+      GH_TOKEN: ${{secrets.GH_TOKEN}}
+    steps:
+      # Checkout repository
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        
+      # Clean up downloaded directories
+      - name: Clean up step
+        run: |
+          sudo rm -rf artifact1.txt
+          sudo rm -rf artifact2.txt
+          ls -la
+
+      # Download worflow artifacts from Git2SF workflow
+      - name: Download workflow artifact
+        id: download_artifacts
+        if: (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure')
+        uses: dawidd6/action-download-artifact@bf251b5aa9c2f7eeb574a96ee720e24f801b7c11
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+          workflow: validation_test.yaml
+          run_id: ${{ github.event.workflow_run.id }}
+          if_no_artifact_found: fail
+
+      # Display structure of downloaded files
+      - name: Display structure of downloaded files
+        run: |
+          ls -la
+
+      # Read pr_num file
+      - name: Read pr_num v2
+        id: get_pr_num
+        run: |
+          cd ./pr_num && ls -la
+          prnum=$(cat pr_num.txt)
+          echo "$prnum"
+          echo "outprnum=$prnum" >> $GITHUB_OUTPUT
+
+      # Read pr_num file data
+      - name: Read branch_name v2
+        id: get_branch_name
+        run: |
+          cd ./branch_name && ls -la
+          branchname=$(cat branch_name.txt)
+          echo "$branchname"
+          echo "outbranchname=$branchname" >> $GITHUB_OUTPUT
+
+      # Checkout acct-scripts repo
+      - name: Checkout Python_Scripts
+        uses: actions/checkout@v4
+        with:
+          repository: AlticeGroupIT/acct-scripts
+          token: ${{ secrets.GH_TOKEN }}
+          path: ./acct-scripts
+
+      # Install requirements.txt from acct-scripts
+      - name: Install requirements.txt
+        run: |
+          ls -l
+          node --version
+          python --version
+          pip --version
+          python3 -m pip install -r "./acct-scripts/requirements.txt"
+
+      - name: Get triggering workflow name
+        id: get_workflow_name
+        run: |
+          run_id="${{ github.event.workflow_run.id }}"
+          repo="${{ github.repository }}"
+          # Fetch run info, then get workflow id, then fetch workflow to get its name
+          workflow_id=$(gh api repos/${repo}/actions/runs/${run_id} --jq '.workflow_id')
+          workflow_name=$(gh api repos/${repo}/actions/workflows/${workflow_id} --jq '.name')
+          echo "workflow_name=$workflow_name"
+          echo "workflow_name=$workflow_name" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      # Generate the Artifact links
+      - name: Generate Artifacts Links
+        id: generate_links
+        if: (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure')
+        run: |
+          if [ -e "artifact1.txt" ]; then
+            artifactLink=$(python3 ./acct-scripts/utils/artifact_url.py \
+                                    --owner Leandro-c-barbosa-alt \
+                                    --repo githubactions \
+                                    --workflow "${{ steps.get_workflow_name.outputs.workflow_name }}" \
+                                    --event pull_request \
+                                    --branch ${{ steps.get_branch_name.outputs.outbranchname }} \
+                                    --artifact artifact1.txt \
+                                    --pullRequest ${{ steps.get_pr_num.outputs.outprnum }} \
+                                    --token ${{secrets.GH_TOKEN}})
+ 
+            echo "$artifactLink"
+            echo "ARTIFACT1_LINK=$artifactLink" >> $GITHUB_OUTPUT
+          else
+            artifactLink=""
+            echo "$artifactLink"
+            echo "ARTIFACT1_LINK=$artifactLink" >> $GITHUB_OUTPUT
+            echo "::warning:: Failure in getting artifact1.txt Artifact URL"
+          fi
+
+          if [ -e "artifact2.txt" ]; then
+            artifactLink=$(python3 ./acct-scripts/utils/artifact_url.py \
+                                    --owner Leandro-c-barbosa-alt \
+                                    --repo githubactions \
+                                    --workflow "${{ steps.get_workflow_name.outputs.workflow_name }}" \
+                                    --event pull_request \
+                                    --branch ${{ steps.get_branch_name.outputs.outbranchname }} \
+                                    --artifact artifact2.txt \
+                                    --pullRequest ${{ steps.get_pr_num.outputs.outprnum }} \
+                                    --token ${{secrets.GH_TOKEN}})
+ 
+            echo "$artifactLink"
+            echo "ARTIFACT2_LINK=$artifactLink" >> $GITHUB_OUTPUT
+          else
+            artifactLink=""
+            echo "$artifactLink"
+            echo "ARTIFACT2_LINK=$artifactLink" >> $GITHUB_OUTPUT
+            echo "::warning:: Failure in getting artifact2.txt Artifact URL"
+          fi
+
+      # Find last comment in PR
+      - name: Find Last Comment
+        run: |
+          echo "$(gh issue view ${{ steps.get_pr_num.outputs.outprnum }} --json comments | jq -r '.comments[-1].body')" > comments.txt
+          echo "Last issue comment thread is fetched:"
+          cat comments.txt
+
+      # Update a comment PR Thread for Build-Success
+      - name: Update Comment Thread - Artifact1.txt
+        if: ${{steps.generate_links.outputs.ARTIFACT1_LINK != ''}}
+        run: |
+          echo -e '------
+            ### Artifact Links
+
+            + Generated Delta Package [artifact1.txt](${{steps.generate_links.outputs.ARTIFACT1_LINK}}) :white_check_mark:' >> comments.txt
+          gh issue comment ${{ steps.get_pr_num.outputs.outprnum }} --edit-last -F comments.txt
+
+      # Update a comment PR Thread for Build-Success
+      - name: Update Comment Thread - Artifact2.txt
+        if: ${{steps.generate_links.outputs.ARTIFACT2_LINK != ''}}
+        run: |
+          echo -e '------
+            ### Artifact Links
+
+            + Generated Delta Package [artifact2.txt](${{steps.generate_links.outputs.ARTIFACT2_LINK}}) :white_check_mark:' >> comments.txt
+          gh issue comment ${{ steps.get_pr_num.outputs.outprnum }} --edit-last -F comments.txt
+
+
+      # Clean up downloaded directories
+      - name: Clean up step
+        run: |
+          sudo rm -rf artifact1.txt
+          sudo rm -rf artifact2.txt
+          ls -la
