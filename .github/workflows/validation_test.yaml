@@ -30,7 +30,19 @@ jobs:
           token: ${{ secrets.GH_TOKEN }}
           path: ./acct-scripts
 
-      - name: Run Salesforce Validation
+      - name: Create Artifacts
         run: |
-          echo "Running Salesforce Validation ${{ github.head_ref }} =  ${{ vars.SOURCE_BRANCH_NAME_1 }} - ${{ vars.SOURCE_BRANCH_NAME_2 }} " 
-          ls -la
+          ls -la > artifact1.txt
+          ls > artifact2.txt
+      
+      - uses: actions/upload-artifact@v4
+        name: Artfifact Upload - ./artifact1.txt
+        with:
+          name: artifact1.txt
+          path: ./artifact1.txt
+
+      - uses: actions/upload-artifact@v4
+        name: Artfifact Upload - ./artifact2.txt
+        with:
+          name: artifact2.txt
+          path: ./artifact2.txt
