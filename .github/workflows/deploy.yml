@@ -1,11 +1,12 @@
-name: Validation Pipeline - test
+name: Deploy Pipeline - test
 
 # Workflow run name
 run-name: Workflow run PR No - ${{ github.event.pull_request.number }} and PR title - ${{ github.event.pull_request.title }} by @${{ github.actor }}
 
 on: 
   pull_request:
-    types: [opened, synchronize]
+    types: 
+      - labeled
     branches:
       - main
     paths-ignore:
@@ -29,7 +30,7 @@ jobs:
       GH_USER_LOGIN: ${{ github.event.pull_request.user.login }}
       GH_PR_BODY: ${{ github.event.pull_request.body }}
 
-    if: (startsWith(github.head_ref, ${{ vars.SOURCE_BRANCH_NAME_1 }}) || startsWith(github.head_ref, ${{ vars.SOURCE_BRANCH_NAME_2 }}) && (github.event_name == 'pull_request') && contains('["Leandro-c-barbosa-alt"]', github.actor))
+    if: (startsWith(github.head_ref, ${{ vars.SOURCE_BRANCH_NAME_1 }}) || startsWith(github.head_ref, ${{ vars.SOURCE_BRANCH_NAME_2 }}) && (github.event_name == 'pull_request') && (github.event.label.name == 'Ready for Deploy') && contains('["Leandro-c-barbosa-alt"]', github.actor))
     steps:
       # Checkout acct-scripts repo
       - name: Checkout Python_Scripts
