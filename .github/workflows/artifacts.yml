@@ -105,7 +105,6 @@ jobs:
                                     --repo githubactions \
                                     --workflow "${{ steps.get_workflow_name.outputs.workflow_name }}" \
                                     --event pull_request \
-                                    --event labeled \
                                     --branch ${{ steps.get_branch_name.outputs.outbranchname }} \
                                     --artifact artifact1.txt \
                                     --pullRequest ${{ steps.get_pr_num.outputs.outprnum }} \
@@ -125,7 +124,6 @@ jobs:
                                     --owner Leandro-c-barbosa-alt \
                                     --repo githubactions \
                                     --workflow "${{ steps.get_workflow_name.outputs.workflow_name }}" \
-                                    --event pull_request \
                                     --event labeled \
                                     --branch ${{ steps.get_branch_name.outputs.outbranchname }} \
                                     --artifact artifact2.txt \
