@@ -5,7 +5,7 @@ run-name: Get the Artifact URLs from git2SF-validation workflow
 
 on:
   workflow_run:
-    workflows: [Validation Pipeline - test]
+    workflows: ["Validation Pipeline - test","Deploy Pipeline - test"]
     types:
       - completed
 
