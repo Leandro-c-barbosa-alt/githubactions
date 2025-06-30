@@ -19,11 +19,15 @@ jobs:
       GH_TOKEN: ${{secrets.GH_TOKEN}}
       SOURCE_BRANCH_NAME_1: ${{ vars.SOURCE_BRANCH_NAME_1 }}
       SOURCE_BRANCH_NAME_2: ${{ vars.SOURCE_BRANCH_NAME_2 }}
+      GH_HEAD_REF: ${{ github.head_ref }}
+      GH_BASE_REF: ${{ github.base_ref }}
       GH_RUN_NUMBER: ${{ github.run_number }}
       GH_SERVER_URL: ${{ github.server_url }}
       GH_REPO: ${{ github.repository }}
       GH_RUN_ID: ${{ github.run_id }}
       GH_PR_NUMBER: ${{ github.event.number }}
+      GH_USER_LOGIN: ${{ github.event.pull_request.user.login }}
+      GH_PR_BODY: ${{ github.event.pull_request.body }}
 
     if: (startsWith(github.head_ref, ${{ vars.SOURCE_BRANCH_NAME_1 }}) || startsWith(github.head_ref, ${{ vars.SOURCE_BRANCH_NAME_2 }}) && (github.event_name == 'pull_request') && contains('["Leandro-c-barbosa-alt"]', github.actor))
     steps:
