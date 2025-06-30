@@ -25,6 +25,8 @@ jobs:
         run: |
           sudo rm -rf artifact1.txt
           sudo rm -rf artifact2.txt
+          sudo rm -rf pr_num
+          sudo rm -rf branch_name
           ls -la
 
       # Download worflow artifacts from Git2SF workflow
@@ -67,6 +69,7 @@ jobs:
         with:
           repository: AlticeGroupIT/acct-scripts
           token: ${{ secrets.GH_TOKEN }}
+          ref: feature/DevOps-scripts-artifact-url-v3
           path: ./acct-scripts
 
       # Install requirements.txt from acct-scripts
@@ -157,9 +160,7 @@ jobs:
       - name: Update Comment Thread - Artifact2.txt
         if: ${{steps.generate_links.outputs.ARTIFACT2_LINK != ''}}
         run: |
-          echo -e '------
-            ### Artifact Links
-
+          echo -e '
             + Generated Delta Package [artifact2.txt](${{steps.generate_links.outputs.ARTIFACT2_LINK}}) :white_check_mark:' >> comments.txt
           gh issue comment ${{ steps.get_pr_num.outputs.outprnum }} --edit-last -F comments.txt
 
@@ -169,4 +170,6 @@ jobs:
         run: |
           sudo rm -rf artifact1.txt
           sudo rm -rf artifact2.txt
+          sudo rm -rf pr_num
+          sudo rm -rf branch_name
           ls -la
