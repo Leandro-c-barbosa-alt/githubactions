@@ -168,6 +168,14 @@ jobs:
             + Generated Delta Package [artifact2.txt](${{steps.generate_links.outputs.ARTIFACT2_LINK}}) :white_check_mark:' >> comments.txt
           gh issue comment ${{ steps.get_pr_num.outputs.outprnum }} --edit-last -F comments.txt
 
+      - name: Test workflow name
+        run: |
+            WORKFLOW_NAME="${{ steps.get_workflow_name.outputs.workflow_name }}"
+            if [[ "$WORKFLOW_NAME" == *Deploy* ]]; then
+              echo "Contém a palavra 'Deploy'"
+            else
+              echo "Não contém a palavra 'Deploy'"
+            fi
 
       # Clean up downloaded directories
       - name: Clean up step
