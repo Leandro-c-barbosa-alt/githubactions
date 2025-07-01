@@ -5,7 +5,9 @@ run-name: Get the Artifact URLs from git2SF-validation workflow
 
 on:
   workflow_run:
-    workflows: ["Validation Pipeline - test","Deploy Pipeline - test"]
+    workflows: 
+        - Validation Pipeline - test
+        - Deploy Pipeline - test
     types:
       - completed
 
@@ -36,7 +38,6 @@ jobs:
         uses: dawidd6/action-download-artifact@bf251b5aa9c2f7eeb574a96ee720e24f801b7c11
         with:
           github_token: ${{ secrets.GH_TOKEN }}
-          workflow: validation_test.yaml
           run_id: ${{ github.event.workflow_run.id }}
           if_no_artifact_found: fail
 
@@ -91,6 +92,7 @@ jobs:
           workflow_name=$(gh api repos/${repo}/actions/workflows/${workflow_id} --jq '.name')
           echo "workflow_name=$workflow_name"
           echo "workflow_name=$workflow_name" >> $GITHUB_OUTPUT
+          echo "Name=  ${{ github.event.workflow_run.name }}"
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
@@ -105,6 +107,7 @@ jobs:
                                     --repo githubactions \
                                     --workflow "${{ steps.get_workflow_name.outputs.workflow_name }}" \
                                     --event pull_request \
+                                    --event labeled \
                                     --branch ${{ steps.get_branch_name.outputs.outbranchname }} \
                                     --artifact artifact1.txt \
                                     --pullRequest ${{ steps.get_pr_num.outputs.outprnum }} \
@@ -124,6 +127,7 @@ jobs:
                                     --owner Leandro-c-barbosa-alt \
                                     --repo githubactions \
                                     --workflow "${{ steps.get_workflow_name.outputs.workflow_name }}" \
+                                    --event pull_request \
                                     --event labeled \
                                     --branch ${{ steps.get_branch_name.outputs.outbranchname }} \
                                     --artifact artifact2.txt \
