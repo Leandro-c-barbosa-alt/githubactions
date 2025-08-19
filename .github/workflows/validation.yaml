@@ -1,4 +1,4 @@
-name: Validation Pipeline
+name: Validation test
 
 # Workflow run name
 run-name: Workflow run PR No - ${{ github.event.pull_request.number }} and PR title - ${{ github.event.pull_request.title }} by @${{ github.actor }}
@@ -47,7 +47,7 @@ jobs:
           echo "ALL_WORKFLOWS=${ALL_WORKFLOWS}"
           
           # Filtre as execuções de workflow que correspondem ao nome
-          RUNNING_WORKFLOWS=$(echo $ALL_WORKFLOWS | jq -r '[.workflow_runs[] | select(.name == "Validation Pipeline" or .name == "Deploy Pipeline")] | length')
+          RUNNING_WORKFLOWS=$(echo $ALL_WORKFLOWS | jq -r '[.workflow_runs[] | select(.name | contains("Validation Pipeline") or .name | contains("Deploy Pipeline"))] | length')
           
           # Imprima os valores filtrados
           echo "RUNNING_WORKFLOWS=${RUNNING_WORKFLOWS}"
@@ -71,4 +71,5 @@ jobs:
               https://api.github.com/repos/${{ github.repository }}/issues \
               -d '{"title": "Pending Validation PR #'"${PR_NUMBER}"'", "body": "Re-trigger validation for PR #'"${PR_NUMBER}"'", "labels": ["pending-validation"]}'
             exit 0
+            
             
