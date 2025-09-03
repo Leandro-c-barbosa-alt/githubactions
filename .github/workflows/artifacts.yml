@@ -50,7 +50,7 @@ jobs:
         if: ${{ github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure' }}
         uses: actions/download-artifact@v5
         with:
-          name: srcToDeploy.zip # or the artifact name exactly as uploaded
+          #name: srcToDeploy.zip # or the artifact name exactly as uploaded
           github-token: ${{ secrets.GH_TOKEN }} # PAT with actions:read on target repo
           repository: AlticeGroupIT/acct-sf-metadata
           run-id: ${{ github.event.workflow_run.id }}
