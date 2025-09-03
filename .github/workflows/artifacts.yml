@@ -52,7 +52,7 @@ jobs:
         with:
           #name: srcToDeploy.zip # or the artifact name exactly as uploaded
           github-token: ${{ secrets.GH_TOKEN }} # PAT with actions:read on target repo
-          repository: AlticeGroupIT/acct-sf-metadata
+          #repository: AlticeGroupIT/acct-sf-metadata
           run-id: ${{ github.event.workflow_run.id }}
           path: ./
 
