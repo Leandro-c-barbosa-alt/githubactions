@@ -54,7 +54,7 @@ jobs:
           github-token: ${{ secrets.GH_TOKEN }} # PAT with actions:read on target repo
           #repository: AlticeGroupIT/acct-sf-metadata
           run-id: ${{ github.event.workflow_run.id }}
-          path: ./
+          #path: ./
 
       # Display structure of downloaded files
       - name: Display structure of downloaded files
