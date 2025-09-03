@@ -95,4 +95,4 @@ jobs:
         name: Artfifact Upload - ./artifact2.txt
         with:
           name: artifact2.txt
-          path: ./artifact2.txt
+          path: ./artifact2.txt 
