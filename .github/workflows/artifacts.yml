@@ -85,7 +85,7 @@ jobs:
         with:
           repository: AlticeGroupIT/acct-scripts
           token: ${{ secrets.GH_TOKEN }}
-          ref: feature/DevOps-scripts-artifact-url-v3
+          #ref: feature/DevOps-scripts-artifact-url-v3
           path: ./acct-scripts
 
       # Install requirements.txt from acct-scripts
