@@ -35,14 +35,26 @@ jobs:
           ls -la
 
       # Download worflow artifacts from Git2SF workflow
-      - name: Download workflow artifact
+      #- name: Download workflow artifact
+      #  id: download_artifacts
+      #  if: (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure')
+      #  uses: dawidd6/action-download-artifact@bf251b5aa9c2f7eeb574a96ee720e24f801b7c11
+      #  with:
+      #    github_token: ${{ secrets.GH_TOKEN }}
+      #    run_id: ${{ github.event.workflow_run.id }}
+      #    if_no_artifact_found: fail
+
+      # Test    
+      - name: Download workflow artifact (GitHub official)
         id: download_artifacts
-        if: (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure')
-        uses: dawidd6/action-download-artifact@bf251b5aa9c2f7eeb574a96ee720e24f801b7c11
+        if: ${{ github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure' }}
+        uses: actions/download-artifact@v5
         with:
-          github_token: ${{ secrets.GH_TOKEN }}
-          run_id: ${{ github.event.workflow_run.id }}
-          if_no_artifact_found: fail
+          name: srcToDeploy.zip # or the artifact name exactly as uploaded
+          github-token: ${{ secrets.GH_TOKEN }} # PAT with actions:read on target repo
+          repository: AlticeGroupIT/acct-sf-metadata
+          run-id: ${{ github.event.workflow_run.id }}
+          path: ./
 
       # Display structure of downloaded files
       - name: Display structure of downloaded files
